@@ -360,7 +360,7 @@ function onApplyScenario(request, sender, sendResponse) {
     sender.tab.id, {file: 'scenarios.js'},
     function() {
       chrome.tabs.executeScript(
-        sender.tab.id, {code: 'initScenario("' + request.scenario + '")'},
+        sender.tab.id, {code: 'dtm_killfile_initScenario("' + request.scenario + '")'},
         function () {chrome.pageAction.show(sender.tab.id);}
       );
     }
