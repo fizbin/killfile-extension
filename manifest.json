@@ -1,0 +1,33 @@
+{
+  "name" : "KillFile",
+  "version" : "0.0.1",
+  "description" : "Provides a killfile for certain blogs.",
+  "background" : {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "icons": { "128": "kficon128.png" },
+  "permissions" : [ "tabs", "http://*/*" , "https://*/*", "storage", "alarms" ],
+  "content_scripts" : [
+    {
+      "matches" : [ "http://*/*", "https://*/*" ],
+      "js" : [ "startthunk.js" ],
+      "run_at" : "document_start",
+      "all_frames" : false
+    },
+    {
+      "matches" : [ "*://disqus.com/embed*", "*://*.disqus.com/embed*" ],
+      "js": [ "disqus.js" ],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ],
+  "page_action": {
+    "default_icon": {
+      "19": "kficon19.png",
+      "38": "kficon38.png"
+    },
+    "default_title": "Killfile active"
+  },
+  "manifest_version": 2
+}

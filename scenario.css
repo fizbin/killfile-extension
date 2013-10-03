@@ -1,0 +1,10 @@
+.dtm_killfile_commentholder_hidecomment .dtm_killfile_shown {
+    display: none;
+}
+.dtm_killfile_commentholder_showcomment .dtm_killfile_hidden {
+    display: none;
+}
+
+/* prettify links */
+.dtm_killfile_commentholder .dtm_killfile_select { visibility: hidden; }
+.dtm_killfile_commentholder:hover .dtm_killfile_select { visibility: inherit; }
