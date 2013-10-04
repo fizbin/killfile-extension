@@ -5,6 +5,8 @@
 // directory.
 
 var dtm_killfile_initScenario;
+var dtm_killfile_killfileScenario;
+
 (function() {
   function showComment(spot) {
     spot.classList.remove("dtm_killfile_commentholder_hidecomment");
@@ -113,10 +115,18 @@ var dtm_killfile_initScenario;
       },
       foreachComment:
       function(loopBody) {
+	this.foreachCommentUnder(document, this.commenttopxpath, loopBody);
+      },
+      foreachCommentUnder:
+      function(node, commentFinder, loopBody) {
 	if (!loopBody) {return null;}
-	var snap = document.evaluate(this.commenttopxpath,
-                                     document, null, 
-                                     XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null );
+	console.log('foreachCommentUnder: ' + commentFinder);
+	console.log(node);
+	var snap = document.evaluate(commentFinder,
+                                     node, null, 
+                                     XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
+				     null );
+	console.log('snapshot length is ' + snap.snapshotLength);
 	for (var i=0; i < snap.snapshotLength; i++) {
           loopBody(snap.snapshotItem(i));
 	}
@@ -741,4 +751,5 @@ var dtm_killfile_initScenario;
   }
 
   dtm_killfile_initScenario = initScenario;
+  dtm_killfile_killfileScenario = killfileScenario;
 })();

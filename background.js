@@ -352,20 +352,35 @@ function onInitMessage(request, sender, sendResponse) {
   return false;
 }
 
-function onApplyScenario(request, sender, sendResponse) {
+function onLoadScenarios(request, sender, sendResponse) {
+  var allFrames = request.allFrames || false;
   chrome.tabs.insertCSS(sender.tab.id,
-                        {file: 'scenario.css', allFrames: true,
-                         runAt: 'document_end'});
+                        {file: 'scenario.css', allFrames: true});
   chrome.tabs.executeScript(
-    sender.tab.id, {file: 'scenarios.js'},
+    sender.tab.id, {file: 'scenarios.js', allFrames: allFrames},
+    function () {
+      sendResponse({});
+    });
+  return true;
+}
+
+function onShowPageAction(request, sender, sendResponse) {
+  chrome.pageAction.show(sender.tab.id);
+  return false;
+}
+
+function onApplyScenario(request, sender, sendResponse) {
+  onLoadScenarios(
+    {}, sender,
     function() {
       chrome.tabs.executeScript(
         sender.tab.id, {code: 'dtm_killfile_initScenario("' + request.scenario + '")'},
-        function () {chrome.pageAction.show(sender.tab.id);}
+        function () {chrome.pageAction.show(sender.tab.id);
+                     sendResponse({});}
       );
     }
   );
-  return false;
+  return true;
 }
 
 function onTrollCheck(request, sender, sendResponse) {
@@ -388,6 +403,8 @@ function onTrollAdd(request, sender, sendResponse) {
 
 var messageFuncs = {init: onInitMessage,
                     applyScenario: onApplyScenario,
+                    loadScenarios: onLoadScenarios,
+                    showPageAction: onShowPageAction,
                     trollCheck: onTrollCheck,
                     trollDel: onTrollDel,
                     trollAdd: onTrollAdd}
