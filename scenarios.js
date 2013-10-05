@@ -234,12 +234,29 @@ var dtm_killfile_killfileScenario;
           var node = snap2.snapshotItem(j);
           commentContents.push(node);	  
 	}
-	var nodesToCheck = commentContents;
+	var nodesToCheck;
+	var canUseExistingNodes = true;
 	if ((commentContents.length == 1)
 	    && (commentContents[0] === commentNode)) {
 	  nodesToCheck = commentNode.childNodes;
-	}
-	var canUseExistingNodes = true;
+	} else {
+          nodesToCheck = commentContents.slice(0);
+          var childs = commentNode.childNodes;
+          for (var j=0; j < childs.length; j++) {
+            var node = childs[j];
+            var indx = nodesToCheck.indexOf(node);
+            if (indx >= 0) {
+              nodesToCheck.splice(indx, 1);
+            } else {
+              if (node.nodeType == 3) {
+                nodesToCheck.push(node);
+              } else {
+                canUseExistingNodes = false;
+                break;
+              }
+            }
+          }
+        }
 	for (var j=0; j < nodesToCheck.length; j++) {
           var node = nodesToCheck[j];
 	  if (canUseExistingNodes) {
@@ -262,16 +279,17 @@ var dtm_killfile_killfileScenario;
 	
 	var retNode;
 	if (canUseExistingNodes) {
-	  var hNode = holderDiv.firstElementChild.nextElementSibling;
 	  retNode = commentNode;
 	  commentNode.classList.add("dtm_killfile_commentholder");
 	  commentNode.classList.add("dtm_killfile_commentholder_showcomment");
-	  commentNode.appendChild(hNode);
-	  for (j=0; j < nodesToCheck.length; j++) {
-	    if ('classList' in nodesToCheck[j]) {
-	      nodesToCheck[j].classList.add("dtm_killfile_shown");
+	  for (j=0; j < commentNode.childNodes.length; j++) {
+            var node = commentNode.childNodes[j];
+	    if ('classList' in node) {
+	      node.classList.add("dtm_killfile_shown");
 	    }
 	  }
+	  var hNode = holderDiv.firstElementChild.nextElementSibling;
+	  commentNode.appendChild(hNode);
 	} else {
 	  commentContents[0].parentNode.insertBefore(
 	    holderDiv, commentContents[0]);
@@ -346,10 +364,10 @@ var dtm_killfile_killfileScenario;
   killfileScenario['feministingNewScenario'] = function() {
     return {
       commenttopxpath: "//div[@id='comments']//" + 
-	"div[contains(concat(' ', @class, ' '), ' comment ')]/" +
-	"div[contains(concat(' ', @class, ' '), ' inner ')]",
-      sigbit: ".//div[contains(concat(' ', @class, ' '), ' commentByline ')]/" +
-	"span[contains(concat(' ', @class, ' '), ' author ')]",
+	"li[contains(concat(' ', @class, ' '), ' comment ')]",
+      sigbit: ".//div[contains(concat(' ', @class, ' '), ' comment-author ')]/" +
+	"span[contains(concat(' ', @class, ' '), ' fn ')]",
+      replaceXpath: "./div",
       precedingBit: '',
       followingBit: '',
       get mangleAppend() {return this.sigbit + '/..'},

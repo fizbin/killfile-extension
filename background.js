@@ -111,7 +111,7 @@ function initConstants() {
     feministing:
     [
       {scenario:'feministingNewScenario',
-       xpath:"//div[@id='comments']//div[@class='commentByline']/span[contains(concat(' ', @class, ' '), ' author ')]"},
+       xpath:"//div[@id='comments']//div[contains(concat(' ', @class, ' '), ' comment-author ')]"},
       {scenario:'typepadScenario',hrefpat:"^[^/]*//[^/]*/archives/[0-9]"},
       {scenario:'feministingNewFrontPageScenario',hrefpat:"^[^/]*//community\\.[^/]*/[^/]*$"},
     ],
