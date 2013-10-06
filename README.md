@@ -8,12 +8,16 @@ see comments from certain individuals, and hide those comments from view.
 It is not intended as a replacement for comment moderation, but merely as a personal measure
 an individual reader can take for their own peace of mind.
 
+This extension is a revival of code from an old greasemonkey script of mine,
+<http://userscripts.org/scripts/show/4107>. As such, some of the code may have suffered from
+bitrot in the meantime and needs retesting on all supported blogs.
+
 Installation
 ------------
 
 Until I put this up on the chrome store, installation will either have to be through cloning
 the git project and then loading an unpacked extension from the `extension` subdirectory, or
-downloading the `killfile-extension.crx` file from this projects releases and then
+downloading the `killfile-extension.crx` file from this project's releases and then
 installing the extension locally.
 
 Usage
