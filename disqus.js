@@ -30,6 +30,7 @@
       }
     );
     mo.observe(pl, {childList: true});
+    chrome.runtime.sendMessage({type: "showPageAction"});
   }
 
   function postScenariosLoad() {
