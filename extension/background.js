@@ -327,7 +327,8 @@ function onInitMessage(request, sender, sendResponse) {
   var hostrematch = hostre.exec(url);
   if (hostrematch) {
     var host = hostrematch[2];
-    var domain = host.replace(/^(?:.*[.])?((?!www\.)[a-zA-Z0-9-]+)(?:\.\w{3}|(?:\.\w{2})+)$/,'$1');
+    var domain = host.replace(
+        /^(?:.*[.])?((?!www\.)[a-zA-Z0-9-]+)(?:\.\w{3}|(?:\.\w{2})+)$/, '$1');
     var matchl = scenariolist[domain];
     var re;
     if (matchl) {
@@ -344,7 +345,8 @@ function onInitMessage(request, sender, sendResponse) {
         retval.push(match);
       }
       if (retval) {
-        console.log("Gonna send " + JSON.stringify(retval) + " back to tab at " + url);
+        console.log("Gonna send " + JSON.stringify(retval)
+                    + " back to tab at " + url);
         sendResponse(retval);
         return true;
       }
@@ -370,20 +372,6 @@ function onShowPageAction(request, sender, sendResponse) {
   return false;
 }
 
-function onApplyScenario(request, sender, sendResponse) {
-  onLoadScenarios(
-    {}, sender,
-    function() {
-      chrome.tabs.executeScript(
-        sender.tab.id, {code: 'dtm_killfile_initScenario("' + request.scenario + '")'},
-        function () {chrome.pageAction.show(sender.tab.id);
-                     sendResponse({});}
-      );
-    }
-  );
-  return true;
-}
-
 function onTrollCheck(request, sender, sendResponse) {
   sendResponse({troll: request.troll,
                 isTroll: trollStore.checkTroll(request.troll)});
@@ -403,7 +391,6 @@ function onTrollAdd(request, sender, sendResponse) {
 }
 
 var messageFuncs = {init: onInitMessage,
-                    applyScenario: onApplyScenario,
                     loadScenarios: onLoadScenarios,
                     showPageAction: onShowPageAction,
                     trollCheck: onTrollCheck,

@@ -8,30 +8,36 @@ chrome.runtime.sendMessage(
   {type: "init"},
   function(response) {
 	var matchArray = response;
-	window.addEventListener("DOMContentLoaded",
-				            function() {
-//                              console.log(document.getElementsByTagName('html')[0].innerHTML);
-				              for (var i=0; i < matchArray.length; i++) {
-                                var match = matchArray[i];
-                                if (match.xpath) {
-                                  var found = document.evaluate(
-                                    match.xpath, document,
-                                    null, XPathResult.BOOLEAN_TYPE, null);
-                                  if (found) {
-                                    found = found.booleanValue;
-                                  }
-                                  if (! found) {
-                                    continue;
-                                  }
-                                }
-                                console.log("asking for " + match.scenario);
-                                chrome.runtime.sendMessage(
-                                  {type: "applyScenario",
-                                   scenario: match.scenario}
-                                );
-                                break;
-                              }
-				            });
+	window.addEventListener(
+      "DOMContentLoaded",
+	  function() {
+        // console.log(document.getElementsByTagName('html')[0].innerHTML);
+		for (var i=0; i < matchArray.length; i++) {
+          var match = matchArray[i];
+          if (match.xpath) {
+            var found = document.evaluate(
+              match.xpath, document,
+              null, XPathResult.BOOLEAN_TYPE, null);
+            if (found) {
+              found = found.booleanValue;
+            }
+            if (! found) {
+              continue;
+            }
+          }
+          console.log("asking for " + match.scenario);
+          chrome.runtime.sendMessage(
+            {type: "loadScenarios", allFrames: false},
+            function() {
+              dtm_killfile_initScenario(match.scenario);
+              chrome.runtime.sendMessage(
+                {type: "showPageAction"}
+              );
+            }
+          );
+          break;
+        }
+	  });
   });
 
 /// Local Variables: ///
