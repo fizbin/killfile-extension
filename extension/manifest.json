@@ -1,6 +1,6 @@
 {
   "name" : "KillFile",
-  "version" : "0.0.1",
+  "version" : "0.0.1.99",
   "description" : "Provides a killfile for certain blogs.",
   "background" : {
     "scripts": ["background.js"],
