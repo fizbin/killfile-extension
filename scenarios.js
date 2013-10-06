@@ -329,7 +329,7 @@ var dtm_killfile_killfileScenario;
       get mangleBefore() {return this.sigbit + '/following::*'},
       __proto__:killfileScenario.basicScenario()
     };
-  }
+  };
 
   // Thanks to Christina Schelin, http://christina267.wordpress.com
   killfileScenario['wordpressScenario2'] = function() {
@@ -338,7 +338,18 @@ var dtm_killfile_killfileScenario;
       sigbit: "span[@class='commentauthor']",
       __proto__:killfileScenario.wordpressScenario()
     };
-  }
+  };
+
+  killfileScenario['wordpressScenario3'] = function() {
+    return {
+      get mangleAppend() {return this.sigbit + '/parent::*'},
+      commenttopxpath: "//ol[contains(concat(' ', @class, ' '), ' commentlist ')]"
+          + "//li[contains(concat(' ', @class, ' '), ' comment ')]/div",
+      sigbit: "div[contains(concat(' ', @class, ' '), ' comment-author ')]//"
+          + "cite[contains(concat(' ', @class, ' '), ' fn ')]",
+      __proto__:killfileScenario.basicScenario()
+    };
+  };
 
   killfileScenario['riotactScenario'] = function() {
     return {
@@ -348,7 +359,7 @@ var dtm_killfile_killfileScenario;
       commenttopxpath: "//ol[@id='commentlist']/li",
       __proto__:killfileScenario.basicScenario()
     };
-  }
+  };
 
   killfileScenario['pandagonNewScenario'] = function() {
     return {
@@ -359,7 +370,7 @@ var dtm_killfile_killfileScenario;
       mangleAppend: "div[@class='comment-posted']",
       __proto__:killfileScenario.basicScenario()
     };
-  }
+  };
 
   killfileScenario['feministingNewScenario'] = function() {
     return {
@@ -373,7 +384,7 @@ var dtm_killfile_killfileScenario;
       get mangleAppend() {return this.sigbit + '/..'},
       __proto__:killfileScenario.basicScenario()
     };
-  }
+  };
 
   killfileScenario['feministingNewFrontPageScenario'] = function() {
     return {
@@ -387,21 +398,6 @@ var dtm_killfile_killfileScenario;
     };
   }
 
-  killfileScenario['pandagonScenario'] = function() {
-    return {
-      sigbit: "span[@class='commentauthor']",
-      __proto__:killfileScenario.wordpressScenario()
-    };
-  }
-
-  killfileScenario['pandagon2Scenario'] = function() {
-    return {
-      commenttopxpath: "//ol[@id='commentlist']/li",
-      sigbit: "child::*[@class='commentauthor']",
-      __proto__:killfileScenario.wordpressScenario()
-    };
-  }
-
   // thanks to Christina Schelin, http://christina267.wordpress.com/
   killfileScenario['voiceScenario'] = function() {
     return {
@@ -409,7 +405,7 @@ var dtm_killfile_killfileScenario;
       sigbit: "div[@class='comments_info']/b",
       __proto__:killfileScenario.wordpressScenario()
     };
-  }
+  };
 
   killfileScenario['livejournalScenario'] = function() {
     return {
@@ -422,7 +418,7 @@ var dtm_killfile_killfileScenario;
       precedingBit: '(?:.*?</a>)?',
       __proto__:killfileScenario.basicScenario()
     };
-  }
+  };
 
   killfileScenario['livejournalScenario_1a'] = function() {
     return {
@@ -447,7 +443,7 @@ var dtm_killfile_killfileScenario;
       tabXpath: '',
       __proto__:killfileScenario.livejournalScenario()
     };
-  }
+  };
 
   killfileScenario['livejournalScenario4'] = function() {
     return {
@@ -458,20 +454,21 @@ var dtm_killfile_killfileScenario;
       mangleBefore: null,
       __proto__:killfileScenario.livejournalScenario()
     };
-  }
+  };
 
   killfileScenario['livejournalScenario5'] = function() {
     return {
       commenttopxpath: "//td[@id='content']//table[@class='heading_bar']/following-sibling::div",
       __proto__:killfileScenario.livejournalScenario4()
     };
-  }
+  };
+
   killfileScenario['livejournalScenario6'] = function() {
     return {
       commenttopxpath: "//table[@class='entrybox'][2]/tbody/tr/td/table/tbody/tr/td/div",
       __proto__:killfileScenario.livejournalScenario5()
     };
-  }
+  };
 
   killfileScenario['livejournalScenario7'] = function() {
     return {
@@ -483,7 +480,7 @@ var dtm_killfile_killfileScenario;
       precedingBit: '<span class="b-leaf-username-name">(?:<span[^>]*lj:user[^>]*>.*?</a>)?',
       __proto__:killfileScenario.basicScenario()
     };
-  }
+  };
 
   killfileScenario['livejournalScenario8'] = function() {
     return {
@@ -562,8 +559,7 @@ var dtm_killfile_killfileScenario;
       mangleAppend: "*[@class='byline'][last()]",
       __proto__:killfileScenario.basicScenario()
     };
-  }
-
+  };
 
   killfileScenario['scienceblogsScenario'] = function() {
     return {
@@ -654,7 +650,7 @@ var dtm_killfile_killfileScenario;
       followingBit: ' @[^@]*',
       __proto__:killfileScenario.basicScenario()
     }
-  }
+  };
 
   killfileScenario['truthoutScenario'] = function() {
     return {
@@ -664,7 +660,7 @@ var dtm_killfile_killfileScenario;
       mangleBefore: ".//br[last()]",
       __proto__:killfileScenario.basicScenario()
     };
-  }
+  };
 
   killfileScenario['athleticsNationScenario'] = function() {
     return {
@@ -675,7 +671,8 @@ var dtm_killfile_killfileScenario;
       mangleAppend: ".//p[@class='cl']",
       __proto__:killfileScenario.basicScenario()
     };
-  }
+  };
+
   killfileScenario['athleticsNationScenario2'] = function() {
     return {
       commenttopxpath: "//div[starts-with(@id,'comment_item_')]/div[starts-with(@id,'comment_inner_')]",
@@ -683,7 +680,8 @@ var dtm_killfile_killfileScenario;
       mangleAppend: "./p[@class='byline' or @class='by']",
       __proto__:killfileScenario.athleticsNationScenario()
     };
-  }
+  };
+
   killfileScenario['athleticsNationOldScenario'] = function() {
     return {
       commenttopxpath: "//a[@name='commenttop'][1]/following-sibling::form//table",
@@ -738,7 +736,7 @@ var dtm_killfile_killfileScenario;
       mangleAppend: ".//p[last()]",
       __proto__:killfileScenario.basicScenario()
     };
-  }
+  };
 
   // fetlife.com
   // Added thanks to xtina@twilite.org
@@ -750,9 +748,9 @@ var dtm_killfile_killfileScenario;
       followingBit: '</a> responded .*',
       __proto__:killfileScenario.wordpressScenario()
     };
-  }
+  };
 
-  // disqus....
+  // disqus non-iframe embedded (e.g. shakesville)
   killfileScenario['disqusScenario1'] = function() {
     return {
       manglePage: function () {
@@ -761,7 +759,17 @@ var dtm_killfile_killfileScenario;
       },
       __proto__:killfileScenario.basicScenario()
     };
-  }
+  };
+  
+  killfileScenario['smForum1'] = function() {
+    return {
+      commenttopxpath: '//a[@name="lastPost"]/preceding-sibling::table[1]/tbody/tr',
+      sigbit: './/tr[td[2]]/td[1]/b',
+      mangleBefore: './/tr[td[2]]/td[1]/b/following::*',
+      __proto__:killfileScenario.basicScenario()
+    };
+  };
+
 
   function initScenario(scenario) {
     killfileScenario[scenario]().manglePage();

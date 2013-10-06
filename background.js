@@ -15,12 +15,11 @@ chrome.storage.local.get(
 function initConstants() {
   var scenariolist_local = {
     pamshouseblend:[{scenario:'soapbloxScenario1',hrefpat:"^[^/]*//[^/]*/showDiary.do"}],
-    escapepod:[{scenario:'wordpressScenario',hrefpat:"^[^/]*//[^/]*/[0-9]"}],
+    escapepod:[{scenario:'wordpressScenario3',hrefpat:"^[^/]*//[^/]*/[0-9].*",
+                xpath:"//ol[contains(concat(' ', @class, ' '),"
+                + " ' commentlist ')]/li[count(div)=1]/div/div"
+                + "/cite[@class='fn']"}],
     ravelry:[{scenario:'wordpressScenario',hrefpat:"^[^/]*//blog\.[^/]*/[0-9]"}],
-    blogsome:[{scenario:'pandagon2Scenario',hrefpat:"^[^/]*//pandagon[.][^/]*/[0-9]"}],
-    pandagon:[{scenario:'pandagonScenario',hrefpat:"^[^/]*//[^/]*/[0-9]"},
-              {scenario:'pandagonNewScenario',hrefpat:"^[^/]*//[^/]*/.*\\bsite/comments/"}],
-    fauxrealtho:[{scenario:'pandagon2Scenario',hrefpat:"^[^/]*//[^/]*/[0-9]"}],
     billcara:[{scenario:'mtScenario2',hrefpat:"^[^/]*//[^/]*/archives/"}],
     // also thanks to http://christina267.wordpress.com
     scalzi:[{scenario:'wordpressScenario',hrefpat:"^[^/]*//[^/]*/whatever"}],
@@ -34,10 +33,11 @@ function initConstants() {
       {scenario:'wordpressScenario', // wordpress 1.5 ?
        xpath:"//ol[contains(concat(' ',@class,' '),' commentlist ')]/li[1]/descendant::*[self::cite or self::span][1][self::cite]"
       },
-      {scenario:'pandagonScenario',  // wordpress 2 ?
-       xpath:"//ol[contains(concat(' ',@class,' '),' commentlist ')]/li[1]/span[@class='commentauthor']"},
       {scenario:'wordpressScenario2',
        xpath:"//ol[@id='commentlist']/li[1]/span[@class='commentauthor']"},
+      {scenario:'wordpressScenario3',
+       xpath:"//ol[contains(concat(' ', @class, ' '), ' commentlist ')]/"
+       + "li[count(div)=1]/div/div/cite[@class='fn']"},
     ],
     blogger:[
       {scenario:'blogspotDLScenario',
@@ -160,6 +160,7 @@ function initConstants() {
     nytimes:[{scenario:'nytimesBlogsScenario', hrefpat:"^[^/]*//[^/]*\\.blogs\\.[^/]*/([0-9]*/){3}[\\w-]+/",}],
     villagevoice:[{scenario:'voiceScenario',hrefpat:"^[^/]*//[^/]*/news/[0-9]",}],
     fetlife:[{scenario:'fetScenario',hrefpat:"[^/]*//[^/]*/groups/[0-9]*/group_posts/"}],
+    escapeartists:[{scenario:'smForum1',hrefpat:"[^/]*//forum\\..*", xpath:'//a[@name="lastPost"]'}],
   };
 
   // sbNation.com is really a family of related blogs
