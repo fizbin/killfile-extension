@@ -3,21 +3,24 @@
   "version" : "0.0.1.99",
   "description" : "Provides a killfile for certain blogs.",
   "background" : {
-    "scripts": ["background.js"],
-    "persistent": false
+    "scripts": [ "serverload.js", "define.js", "background.js" ],
+    "persistent": true
   },
   "icons": { "128": "kficon128.png" },
   "permissions" : [ "tabs", "http://*/*" , "https://*/*", "storage", "alarms" ],
   "content_scripts" : [
     {
       "matches" : [ "http://*/*", "https://*/*" ],
-      "js" : [ "startthunk.js" ],
+      "css": [ "scenario.css" ],
+      "exclude_matches": [ "*://disqus.com/*", "*://*.disqus.com/*" ],
+      "js" : [ "clientload.js", "define.js", "startthunk.js" ],
       "run_at" : "document_start",
       "all_frames" : false
     },
     {
       "matches" : [ "*://disqus.com/embed*", "*://*.disqus.com/embed*" ],
-      "js": [ "disqus.js" ],
+      "css": [ "scenario.css" ],
+      "js": [ "clientload.js", "define.js", "disqus.js" ],
       "run_at": "document_idle",
       "all_frames": true
     }

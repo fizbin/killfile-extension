@@ -5,14 +5,14 @@
 // directory.
 
 chrome.runtime.sendMessage(
-  {type: "init"},
+  {type: "init", url: String(location.href)},
   function(response) {
-	var matchArray = response;
-	window.addEventListener(
+    var matchArray = response;
+    window.addEventListener(
       "DOMContentLoaded",
-	  function() {
+      function() {
         // console.log(document.getElementsByTagName('html')[0].innerHTML);
-		for (var i=0; i < matchArray.length; i++) {
+        for (var i=0; i < matchArray.length; i++) {
           var match = matchArray[i];
           if (match.xpath) {
             var found = document.evaluate(
@@ -26,18 +26,13 @@ chrome.runtime.sendMessage(
             }
           }
           console.log("asking for " + match.scenario);
-          chrome.runtime.sendMessage(
-            {type: "loadScenarios", allFrames: false},
-            function() {
-              dtm_killfile_initScenario(match.scenario);
-              chrome.runtime.sendMessage(
-                {type: "showPageAction"}
-              );
-            }
-          );
+          define("scenariocallback", ["scenarios"], function(slib) {
+            slib.initScenario(match.scenario);
+            chrome.runtime.sendMessage({type: "showPageAction"});            
+          });
           break;
         }
-	  });
+      });
   });
 
 /// Local Variables: ///

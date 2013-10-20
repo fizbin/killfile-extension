@@ -1,36 +1,37 @@
 // Handle disqus iframed comments
-(function (){
+define("disqus", ["scenarios", "clientUtil"], function (scenarios, clientUtil){
+  "use strict";
   var scen;
   function postListAttach() {
     var mo = new MutationObserver(
       function(mrList) {
-	mrList.forEach(function(mr){
-	  Array.prototype.forEach.call(
-	    mr.addedNodes,
-	    function(node) {
-	      scen.foreachCommentUnder(
-		node, scen.commentmidxpath,
-		function(c) {
-		  scen.handleComment(c);
-		});
-	    }
-	  );
-	});
+        mrList.forEach(function(mr){
+          Array.prototype.forEach.call(
+            mr.addedNodes,
+            function(node) {
+              scen.foreachCommentUnder(
+                node, scen.commentmidxpath,
+                function(c) {
+                  scen.checkComment(scen.handleComment(c));
+                });
+            }
+          );
+        });
       }
     );
     var pl = document.getElementById('post-list');
     Array.prototype.forEach.call(
       pl.childNodes,
       function(node) {
-	scen.foreachCommentUnder(
-	  node, scen.commentmidxpath,
-	  function(c) {
-	    scen.handleComment(c);
-	  });
+        scen.foreachCommentUnder(
+          node, scen.commentmidxpath,
+          function(c) {
+            scen.handleComment(c);
+          });
       }
     );
     mo.observe(pl, {childList: true});
-    chrome.runtime.sendMessage({type: "showPageAction"});
+    clientUtil.sendMessage({type: "showPageAction"});
   }
 
   function postScenariosLoad() {
@@ -41,26 +42,30 @@
       aHrefAttribute: 'data-user',
       sigbit: './/header/*[contains(concat(" ", @class, " "), " author ")]',
       mangleAppend: './/header'
-	+ '/*[contains(concat(" ", @class, " "), " post-meta ")]',
-      __proto__:dtm_killfile_killfileScenario.basicScenario()
+        + '/*[contains(concat(" ", @class, " "), " post-meta ")]',
+      __proto__:scenarios.killfileScenario.basicScenario()
     };
     function cb(mr, mo) {
       var pl = document.getElementById('post-list');
       if (pl) {
-	console.log('found post-list');
-	mo.disconnect();
-	postListAttach();
+        console.log('found post-list');
+        mo.disconnect();
+        postListAttach();
       }
     };
     var mo1 = new MutationObserver(cb);
     mo1.observe(document.firstElementChild,
-		{ childList: true, subtree: true });
+                { childList: true, subtree: true });
     cb([], mo1);
     console.log('attached post-list finder');
   }
 
-  chrome.runtime.sendMessage(
-    {type: "loadScenarios", allFrames: true},
-    postScenariosLoad);
-  console.log('asked for scenarios');
-})();
+  postScenariosLoad();
+});
+
+/// Local Variables: ///
+/// mode: Javascript ///
+/// tab-width: 4 ///
+/// indent-tabs-mode: nil ///
+/// js-indent-level: 2 ///
+/// End: ///

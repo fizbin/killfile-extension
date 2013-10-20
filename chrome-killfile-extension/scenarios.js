@@ -7,7 +7,8 @@
 var dtm_killfile_initScenario;
 var dtm_killfile_killfileScenario;
 
-(function() {
+define("scenarios", ["clientUtil"], function(culib) {
+  var sendMessage = culib.sendMessage;
   function showComment(spot) {
     spot.classList.remove("dtm_killfile_commentholder_hidecomment");
     spot.classList.add("dtm_killfile_commentholder_showcomment");
@@ -24,34 +25,39 @@ var dtm_killfile_killfileScenario;
     return div.innerHTML;
   }
 
+  function chkComment(spot) {
+    var potentialTroll = spot.getAttribute("dtm_killfile_user");
+    if (potentialTroll) {
+      sendMessage(
+        {type:'trollCheck', troll:potentialTroll},
+        function (response) {
+          if (response.isTroll) {
+            hideComment(spot);
+          } else {
+            showComment(spot);
+          }
+        });
+    }
+  }
+
   function reviewContent() {
     var snap = document.getElementsByClassName("dtm_killfile_commentholder");
     for (var i=0; i < snap.length; i++) {
       var spot = snap[i];
       var potentialTroll = spot.getAttribute("dtm_killfile_user");
       // Javascript scoping rules suck
-      (function(spot2) {
-	chrome.runtime.sendMessage(
-	  {type:'trollCheck', troll:potentialTroll},
-	  function (response) {
-	    if (response.isTroll) {
-	      hideComment(spot2);
-	    } else {
-	      showComment(spot2);
-	    }
-	  });
-      })(spot);
+      chkComment(spot);
     }
   }
 
   function addTroll(troll) {
-    chrome.runtime.sendMessage(
+    sendMessage(
       {type:'trollAdd', troll:troll},
       reviewContent);
   }
 
   function delTroll(troll) {
-    chrome.runtime.sendMessage(
+    sendMessage(
       {type:'trollDel', troll:troll},
       reviewContent);
   }
@@ -106,71 +112,71 @@ var dtm_killfile_killfileScenario;
       aHrefAttribute: 'href', // sometimes title
       inHrefBit: '',
       get sigpat() {
-	var s = ('^ *' + this.precedingBit + 
-		 ' *(?:<a [^>]*?(?:\\b(?:' + this.aHrefAttribute + 
-		 ') *="([^>"]*)")?[^>]*>)?' + this.inHrefBit +
-		 '(\\S[^<]*[^ <]|[^ <]) *(?:</a>)? *' + 
-		 this.followingBit + '.*');
-	return new RegExp(s,"");
+        var s = ('^ *' + this.precedingBit + 
+                 ' *(?:<a [^>]*?(?:\\b(?:' + this.aHrefAttribute + 
+                 ') *="([^>"]*)")?[^>]*>)?' + this.inHrefBit +
+                 '(\\S[^<]*[^ <]|[^ <]) *(?:</a>)? *' + 
+                 this.followingBit + '.*');
+        return new RegExp(s,"");
       },
       foreachComment:
       function(loopBody) {
-	this.foreachCommentUnder(document, this.commenttopxpath, loopBody);
+        this.foreachCommentUnder(document, this.commenttopxpath, loopBody);
       },
       foreachCommentUnder:
       function(node, commentFinder, loopBody) {
-	if (!loopBody) {return null;}
-	console.log('foreachCommentUnder: ' + commentFinder);
-	console.log(node);
-	var snap = document.evaluate(commentFinder,
+        if (!loopBody) {return null;}
+        console.log('foreachCommentUnder: ' + commentFinder);
+        console.log(node);
+        var snap = document.evaluate(commentFinder,
                                      node, null, 
                                      XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
-				     null );
-	console.log('snapshot length is ' + snap.snapshotLength);
-	for (var i=0; i < snap.snapshotLength; i++) {
+                                     null );
+        console.log('snapshot length is ' + snap.snapshotLength);
+        for (var i=0; i < snap.snapshotLength; i++) {
           loopBody(snap.snapshotItem(i));
-	}
+        }
       },
       getUserspec:
       function(commentNode) {
-	if (!commentNode) {return null;}
-	var sigsnap = document.evaluate(this.sigbit, commentNode, null,
-					XPathResult.ANY_UNORDERED_NODE_TYPE, null);
-	var nd = sigsnap.singleNodeValue;
-	if (nd == null) {progresslog("xpath " + this.sigbit + " gave null: " + commentNode);return null;}
-	var sigHTML = nd.innerHTML;
-	if (!sigHTML) {sigHTML = nd.textContent;}
-	else {sigHTML = sigHTML.replace(/\&nbsp;/g, ' ');}
-	sigHTML = sigHTML.replace(/\s+/g, ' ');
-	sigHTML = sigHTML.replace(/\s+$/, '');
-	sigHTML = sigHTML.replace(/^\s+/, '');
-	// in case people match on attribute tags
-	var sigre = this.sigpat;
-	if (! sigre.test(sigHTML)) {
+        if (!commentNode) {return null;}
+        var sigsnap = document.evaluate(this.sigbit, commentNode, null,
+                                        XPathResult.ANY_UNORDERED_NODE_TYPE, null);
+        var nd = sigsnap.singleNodeValue;
+        if (nd == null) {progresslog("xpath " + this.sigbit + " gave null: " + commentNode);return null;}
+        var sigHTML = nd.innerHTML;
+        if (!sigHTML) {sigHTML = nd.textContent;}
+        else {sigHTML = sigHTML.replace(/\&nbsp;/g, ' ');}
+        sigHTML = sigHTML.replace(/\s+/g, ' ');
+        sigHTML = sigHTML.replace(/\s+$/, '');
+        sigHTML = sigHTML.replace(/^\s+/, '');
+        // in case people match on attribute tags
+        var sigre = this.sigpat;
+        if (! sigre.test(sigHTML)) {
           progresslog("Didn't match: html " + JSON.stringify(sigHTML) + " and regexp " + sigre);
           return null;
-	}
-	var user = sigHTML.replace(sigre,this.sigUserMatch);
-	var href = sigHTML.replace(sigre,this.sigHrefMatch);
-	progresslog("user: html {" + JSON.stringify(sigHTML) + "} and regexp {" + sigre + "} gave " + escape(user) + "!" + escape(href));
-	return [user, escape(user) + "!" + escape(href)];
+        }
+        var user = sigHTML.replace(sigre,this.sigUserMatch);
+        var href = sigHTML.replace(sigre,this.sigHrefMatch);
+        progresslog("user: html {" + JSON.stringify(sigHTML) + "} and regexp {" + sigre + "} gave " + escape(user) + "!" + escape(href));
+        return [user, escape(user) + "!" + escape(href)];
       },
       divHTML:
       '<div class="dtm_killfile_shown"></div>' +
-	'<div class="dtm_killfile_hidden"><p>Comment by __SHORTUSER__ blocked.' +
-	' <span class="dtm_killfile_select">[<a href="tag:remove%20user%20from%20killfile" class="dtm_killfile_unkill">unkill</a>]' +
-	'&#8203;[<a href="tag:show%20comment" class="dtm_killfile_show">show&nbsp;comment</a>]' +
-	'</span></p></div>',
+        '<div class="dtm_killfile_hidden"><p>Comment by __SHORTUSER__ blocked.' +
+        ' <span class="dtm_killfile_select">[<a href="tag:remove%20user%20from%20killfile" class="dtm_killfile_unkill">unkill</a>]' +
+        '&#8203;[<a href="tag:show%20comment" class="dtm_killfile_show">show&nbsp;comment</a>]' +
+        '</span></p></div>',
       divHTMLuser:
       function(user, userspec) {
-	return this.divHTML.replace(/__SHORTUSER__/g,escapeHTML(user))
-	  .replace(/__USER__/g,escapeHTML(userspec));
+        return this.divHTML.replace(/__SHORTUSER__/g,escapeHTML(user))
+          .replace(/__USER__/g,escapeHTML(userspec));
       },
       getEmptyHolder:
       function(commentNode, user, userspec) {
-	var ddiv = document.createElement('div');
-	ddiv.innerHTML = this.divHTMLuser(user, userspec);
-	if (this.tabXpath) {
+        var ddiv = document.createElement('div');
+        ddiv.innerHTML = this.divHTMLuser(user, userspec);
+        if (this.tabXpath) {
           var tabNode = document.evaluate(this.tabXpath, commentNode, null,
                                           XPathResult.ANY_UNORDERED_NODE_TYPE, null);
           tabNode = tabNode.singleNodeValue;
@@ -178,68 +184,68 @@ var dtm_killfile_killfileScenario;
             var tabtarget = ddiv.childNodes[1].childNodes[0];
             tabtarget.insertBefore(tabNode.cloneNode(true),tabtarget.firstChild);
           }
-	}
-	ddiv.setAttribute("class",
-			  "dtm_killfile_commentholder"
-			  + " dtm_killfile_commentholder_showcomment");
-	ddiv.setAttribute("dtm_killfile_user", userspec);
-	return ddiv;
+        }
+        ddiv.setAttribute("class",
+                          "dtm_killfile_commentholder"
+                          + " dtm_killfile_commentholder_showcomment");
+        ddiv.setAttribute("dtm_killfile_user", userspec);
+        return ddiv;
       },
       spanHTML: ' [<a href="tag:killfile%20user" class="dtm_killfile_kill">kill</a>]' +
-	'&#8203;[<a href="tag:hide%20comment" class="dtm_killfile_hide">hide&nbsp;comment</a>]',
+        '&#8203;[<a href="tag:hide%20comment" class="dtm_killfile_hide">hide&nbsp;comment</a>]',
       spanHTMLuser:
       function(user, userspec) {
-	return this.spanHTML.replace(/__SHORTUSER__/g,escapeHTML(user))
-	  .replace(/__USER__/g,escapeHTML(userspec));
+        return this.spanHTML.replace(/__SHORTUSER__/g,escapeHTML(user))
+          .replace(/__USER__/g,escapeHTML(userspec));
       },
       mangleCommentContent:
       function(contentNode, user, userspec) {
-	if (!contentNode) {return null;}
-	var snap3 = null;
-	var useBefore = true;
-	if (this.mangleBefore) {
+        if (!contentNode) {return null;}
+        var snap3 = null;
+        var useBefore = true;
+        if (this.mangleBefore) {
           snap3 = document.evaluate(this.mangleBefore, contentNode, null,
                                     XPathResult.ANY_UNORDERED_NODE_TYPE, null);
-	} else if (this.mangleAppend) {
+        } else if (this.mangleAppend) {
           snap3 = document.evaluate(this.mangleAppend, contentNode, null,
                                     XPathResult.ANY_UNORDERED_NODE_TYPE, null);
           useBefore = false;
-	}
-	if (snap3 && snap3.singleNodeValue) {
+        }
+        if (snap3 && snap3.singleNodeValue) {
           var target = snap3.singleNodeValue;
           var cspan = document.createElement('span');
           cspan.innerHTML = this.spanHTMLuser(user, userspec);
-	  cspan.className = "dtm_killfile_select";
+          cspan.className = "dtm_killfile_select";
           if (useBefore) {
             target.parentNode.insertBefore(cspan,target);
           } else {
             target.appendChild(cspan);
           }
           return contentNode;
-	}
-	progresslog("Can't find insertion point for kill button");
-	progresslog(contentNode);
-	progresslog(contentNode.childNodes[0]);
-	return null;
+        }
+        progresslog("Can't find insertion point for kill button");
+        progresslog(contentNode);
+        progresslog(contentNode.childNodes[0]);
+        return null;
       },
       insertCommentHolder:
       function(commentNode, holderDiv) {
-	if (! (commentNode && holderDiv)) {return null;}
-	var snap2 = document.evaluate(
-	  this.replaceXpath, commentNode, null,
+        if (! (commentNode && holderDiv)) {return null;}
+        var snap2 = document.evaluate(
+          this.replaceXpath, commentNode, null,
           XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null );
-	if (snap2.snapshotLength == 0) {return null;}
-	var commentContents = [];
-	for (var j=0; j < snap2.snapshotLength; j++) {
+        if (snap2.snapshotLength == 0) {return null;}
+        var commentContents = [];
+        for (var j=0; j < snap2.snapshotLength; j++) {
           var node = snap2.snapshotItem(j);
-          commentContents.push(node);	  
-	}
-	var nodesToCheck;
-	var canUseExistingNodes = true;
-	if ((commentContents.length == 1)
-	    && (commentContents[0] === commentNode)) {
-	  nodesToCheck = commentNode.childNodes;
-	} else {
+          commentContents.push(node);   
+        }
+        var nodesToCheck;
+        var canUseExistingNodes = true;
+        if ((commentContents.length == 1)
+            && (commentContents[0] === commentNode)) {
+          nodesToCheck = commentNode.childNodes;
+        } else {
           nodesToCheck = commentContents.slice(0);
           var childs = commentNode.childNodes;
           for (var j=0; j < childs.length; j++) {
@@ -257,72 +263,73 @@ var dtm_killfile_killfileScenario;
             }
           }
         }
-	for (var j=0; j < nodesToCheck.length; j++) {
+        for (var j=0; j < nodesToCheck.length; j++) {
           var node = nodesToCheck[j];
-	  if (canUseExistingNodes) {
-	    if (node.nodeType == 3) {
-	      if (/\S/.test(node.nodeValue)) {
-		canUseExistingNodes = false;
-	      } else {
-		var rng = document.createRange();
-		rng.selectNodeContents(node);
-		var bnd = rng.getBoundingClientRect();
-		if (bnd.height || bnd.width) {
-		  canUseExistingNodes = false;
-		}
-	      }
-	    } else if (node.parentNode !== commentNode) {
-	      canUseExistingNodes = false;
-	    }
-	  }
-	}
-	
-	var retNode;
-	if (canUseExistingNodes) {
-	  retNode = commentNode;
-	  commentNode.classList.add("dtm_killfile_commentholder");
-	  commentNode.classList.add("dtm_killfile_commentholder_showcomment");
-	  for (j=0; j < commentNode.childNodes.length; j++) {
+          if (canUseExistingNodes) {
+            if (node.nodeType == 3) {
+              if (/\S/.test(node.nodeValue)) {
+                canUseExistingNodes = false;
+              } else {
+                var rng = document.createRange();
+                rng.selectNodeContents(node);
+                var bnd = rng.getBoundingClientRect();
+                if (bnd.height || bnd.width) {
+                  canUseExistingNodes = false;
+                }
+              }
+            } else if (node.parentNode !== commentNode) {
+              canUseExistingNodes = false;
+            }
+          }
+        }
+        
+        var retNode;
+        if (canUseExistingNodes) {
+          retNode = commentNode;
+          commentNode.classList.add("dtm_killfile_commentholder");
+          commentNode.classList.add("dtm_killfile_commentholder_showcomment");
+          for (j=0; j < commentNode.childNodes.length; j++) {
             var node = commentNode.childNodes[j];
-	    if ('classList' in node) {
-	      node.classList.add("dtm_killfile_shown");
-	    }
-	  }
-	  var hNode = holderDiv.firstElementChild.nextElementSibling;
-	  commentNode.appendChild(hNode);
-	} else {
-	  commentContents[0].parentNode.insertBefore(
-	    holderDiv, commentContents[0]);
-	  var contentNode = holderDiv.firstChild;
-	  for (j=0; j < commentContents.length; j++) {
-	    contentNode.appendChild(commentContents[j]);
-	  }
-	  retNode = holderDiv;
-	}
-	retNode.addEventListener('click', handleClick, true);
-	return retNode;
+            if ('classList' in node) {
+              node.classList.add("dtm_killfile_shown");
+            }
+          }
+          var hNode = holderDiv.firstElementChild.nextElementSibling;
+          commentNode.appendChild(hNode);
+        } else {
+          commentContents[0].parentNode.insertBefore(
+            holderDiv, commentContents[0]);
+          var contentNode = holderDiv.firstChild;
+          for (j=0; j < commentContents.length; j++) {
+            contentNode.appendChild(commentContents[j]);
+          }
+          retNode = holderDiv;
+        }
+        retNode.addEventListener('click', handleClick, true);
+        return retNode;
       },
       handleComment:
       function(commentNode) {
-	progresslog("Comment found " + location.href);
-	var us = this.getUserspec(commentNode);
-	if (! us) {progresslog("Can't find user");return null;}
-	var commentTwo = this.mangleCommentContent(commentNode, us[0], us[1]);
-	if (!commentTwo) {progresslog("No kill button"); return null;}
-	var ddiv = this.getEmptyHolder(commentTwo, us[0], us[1]);
-	if (! ddiv) {progresslog("Can't get empty holder");return null;}
-	var contentdiv = this.insertCommentHolder(commentTwo, ddiv);
-	if (! contentdiv) {progresslog("Can't insert comment holder");return null;}
-	contentdiv.setAttribute("dtm_killfile_user", us[1]);	
+        progresslog("Comment found " + location.href);
+        var us = this.getUserspec(commentNode);
+        if (! us) {progresslog("Can't find user");return null;}
+        var commentTwo = this.mangleCommentContent(commentNode, us[0], us[1]);
+        if (!commentTwo) {progresslog("No kill button"); return null;}
+        var ddiv = this.getEmptyHolder(commentTwo, us[0], us[1]);
+        if (! ddiv) {progresslog("Can't get empty holder");return null;}
+        var contentdiv = this.insertCommentHolder(commentTwo, ddiv);
+        if (! contentdiv) {progresslog("Can't insert comment holder");return null;}
+        contentdiv.setAttribute("dtm_killfile_user", us[1]); 
+        return contentdiv;
       },
+      checkComment: chkComment,
       manglePage:
       function () {
-	var me = this;
-	this.foreachComment(function (c) {me.handleComment(c)});
+        var me = this;
+        this.foreachComment(function (c) {me.handleComment(c)});
       }
     };
   }
-
 
   killfileScenario['wordpressScenario'] = function() {
     return {
@@ -344,9 +351,9 @@ var dtm_killfile_killfileScenario;
     return {
       get mangleAppend() {return this.sigbit + '/parent::*'},
       commenttopxpath: "//ol[contains(concat(' ', @class, ' '), ' commentlist ')]"
-          + "//li[contains(concat(' ', @class, ' '), ' comment ')]/div",
+        + "//li[contains(concat(' ', @class, ' '), ' comment ')]/div",
       sigbit: "div[contains(concat(' ', @class, ' '), ' comment-author ')]//"
-          + "cite[contains(concat(' ', @class, ' '), ' fn ')]",
+        + "cite[contains(concat(' ', @class, ' '), ' fn ')]",
       __proto__:killfileScenario.basicScenario()
     };
   };
@@ -375,9 +382,9 @@ var dtm_killfile_killfileScenario;
   killfileScenario['feministingNewScenario'] = function() {
     return {
       commenttopxpath: "//div[@id='comments']//" + 
-	"li[contains(concat(' ', @class, ' '), ' comment ')]",
+        "li[contains(concat(' ', @class, ' '), ' comment ')]",
       sigbit: ".//div[contains(concat(' ', @class, ' '), ' comment-author ')]/" +
-	"span[contains(concat(' ', @class, ' '), ' fn ')]",
+        "span[contains(concat(' ', @class, ' '), ' fn ')]",
       replaceXpath: "./div",
       precedingBit: '',
       followingBit: '',
@@ -498,18 +505,18 @@ var dtm_killfile_killfileScenario;
     // If you want this, see the comments in "scenariolist" below
     return {
       commenttopxpath: "//table[not(ancestor::table) and " + 
-	"(preceding::a[starts-with(@href,'http://www.livejournal.com/userinfo.bml?')]) " +
-	"and (descendant::a[substring-after(@href,'.livejournal.com/')=''])]",
+        "(preceding::a[starts-with(@href,'http://www.livejournal.com/userinfo.bml?')]) " +
+        "and (descendant::a[substring-after(@href,'.livejournal.com/')=''])]",
       sigbit: "descendant::a[contains(@href,'livejournal.com/') and " +
-	"substring-after(@href,'livejournal.com/')=''][1]/@href",
+        "substring-after(@href,'livejournal.com/')=''][1]/@href",
       replaceXpath: ".",
       sigpat: /(http:\/\/(\w+)\..*)/,
       sigUserMatch: '$2',
       sigHrefMatch: '$1',
       mangleAppend: "descendant::a[contains(@href,'livejournal.com/') and " +
-	"substring-after(@href,'livejournal.com/')=''][1]/..",
+        "substring-after(@href,'livejournal.com/')=''][1]/..",
       spanHTML: '<br>[<a href="tag:killfile%20user" class="dtm_killfile_kill">kill</a>]' +
-	'&#8203;[<a href="tag:hide%20comment" class="dtm_killfile_hide">hide&nbsp;comment</a>]',
+        '&#8203;[<a href="tag:hide%20comment" class="dtm_killfile_hide">hide&nbsp;comment</a>]',
       __proto__:killfileScenario.basicScenario()
     };
   }
@@ -754,8 +761,8 @@ var dtm_killfile_killfileScenario;
   killfileScenario['disqusScenario1'] = function() {
     return {
       manglePage: function () {
-	var me = this;
-	// ___ YOU WERE HERE ___
+        var me = this;
+        // ___ YOU WERE HERE ___
       },
       __proto__:killfileScenario.basicScenario()
     };
@@ -778,4 +785,16 @@ var dtm_killfile_killfileScenario;
 
   dtm_killfile_initScenario = initScenario;
   dtm_killfile_killfileScenario = killfileScenario;
-})();
+
+  return {
+    initScenario: initScenario,
+    killfileScenario: killfileScenario
+  };
+});
+
+/// Local Variables: ///
+/// mode: Javascript ///
+/// tab-width: 4 ///
+/// indent-tabs-mode: nil ///
+/// js-indent-level: 2 ///
+/// End: ///

@@ -1,7 +1,7 @@
-.dtm_killfile_commentholder_hidecomment .dtm_killfile_shown {
+.dtm_killfile_commentholder_hidecomment > .dtm_killfile_shown {
     display: none;
 }
-.dtm_killfile_commentholder_showcomment .dtm_killfile_hidden {
+.dtm_killfile_commentholder_showcomment > .dtm_killfile_hidden {
     display: none;
 }
 
