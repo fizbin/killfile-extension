@@ -4,7 +4,7 @@
 // distributed under the file LICENSE found in this
 // directory.
 
-define("background", ["scenariolist", "trollstore"], function(sllib, tslib) {
+define && define("background", ["scenariolist", "trollstore"], function(sllib, tslib) {
   var trollStore = tslib.trollStore;
 
   function onInitMessage(request, sender, sendResponse) {

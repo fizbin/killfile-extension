@@ -1,5 +1,5 @@
 // Handle disqus iframed comments
-define("disqus", ["scenarios", "clientUtil"], function (scenarios, clientUtil){
+define && define("disqus", ["scenarios", "clientUtil"], function (scenarios, clientUtil){
   "use strict";
   var scen;
   function postListAttach() {

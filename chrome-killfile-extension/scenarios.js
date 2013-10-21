@@ -7,7 +7,7 @@
 var dtm_killfile_initScenario;
 var dtm_killfile_killfileScenario;
 
-define("scenarios", ["clientUtil"], function(culib) {
+define && define("scenarios", ["clientUtil"], function(culib) {
   var sendMessage = culib.sendMessage;
   function showComment(spot) {
     spot.classList.remove("dtm_killfile_commentholder_hidecomment");

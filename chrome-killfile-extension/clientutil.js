@@ -1,4 +1,4 @@
-define("clientUtil", [], function() {
+define && define("clientUtil", [], function() {
   return {sendMessage: chrome.runtime.sendMessage};
 });
 

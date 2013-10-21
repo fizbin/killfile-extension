@@ -4,7 +4,7 @@
 // distributed under the file LICENSE found in this
 // directory.
 
-define("trollstore", [], function () {
+define && define("trollstore", [], function () {
   "use strict";
   var trollStore = new (function () {
     var trolls = {};
