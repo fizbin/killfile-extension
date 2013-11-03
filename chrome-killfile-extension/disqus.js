@@ -55,8 +55,7 @@ define && define(
         }
       };
       var mo1 = new MutationObserver(cb);
-      mo1.observe(document.firstElementChild,
-                  { childList: true, subtree: true });
+      mo1.observe(document.body, { childList: true, subtree: true });
       cb([], mo1);
       console.log('attached post-list finder');
     }

@@ -1,13 +1,14 @@
 "use strict";
+
 const ffload = require('./ffload');
 const tabs = require('sdk/tabs');
 const self = require("sdk/self");
 
 const loader = ffload.loader();
 
-var sllib = loader.get(self.data.url('scenariolist'));
-var tslib = loader.get(self.data.url('trollstore'));
-var trollStore = tslib.trollStore;
+const sllib = loader.get(self.data.url('scenariolist'));
+const tslib = loader.get(self.data.url('trollstore'));
+const trollStore = tslib.trollStore;
 
 const pageMod = require("sdk/page-mod");
 
@@ -71,6 +72,14 @@ function newWorker(worker) {
 pageMod.PageMod({
   include: "*",
   contentStyleFile: [self.data.url("scenario.css")]
+});
+
+pageMod.PageMod({
+  include: /https?:\/\/([^\/]+\.)?disqus.com\/embed.*/,
+  attachTo: ["frame"],
+  contentScriptFile: disqusDeps
+}).on("attach", function(worker) {
+  newWorker(worker);
 });
 
 tabs.on("ready", function tabsOnReady (tab) {
