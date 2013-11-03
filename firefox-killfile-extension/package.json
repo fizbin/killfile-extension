@@ -1,6 +1,6 @@
 {
-  "name": "firefox-killfile-extension",
-  "fullName": "firefox-killfile-extension",
+  "name": "killfile",
+  "fullName": "Blog Killfile",
   "id": "dtm-killlfile@martin.snowplow.org",
   "description": "Provides a killfile for certain blogs' comment sections.",
   "author": "Daniel Martin",
