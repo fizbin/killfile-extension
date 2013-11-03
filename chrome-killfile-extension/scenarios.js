@@ -164,7 +164,7 @@ define && define("scenarios", ["./clientUtil"], function(culib) {
       divHTML:
       '<div class="dtm_killfile_shown"></div>' +
         '<div class="dtm_killfile_hidden"><p>Comment by __SHORTUSER__ blocked.' +
-        ' <span class="dtm_killfile_select">[<a href="tag:remove%20user%20from%20killfile" class="dtm_killfile_unkill">unkill</a>]' +
+        ' <span class="dtm_killfile_select">[<a href="tag:remove%20user%20from%20killfile" class="dtm_killfile_unkill">unhush</a>]' +
         '&#8203;[<a href="tag:show%20comment" class="dtm_killfile_show">show&nbsp;comment</a>]' +
         '</span></p></div>',
       divHTMLuser:
@@ -191,7 +191,7 @@ define && define("scenarios", ["./clientUtil"], function(culib) {
         ddiv.setAttribute("dtm_killfile_user", userspec);
         return ddiv;
       },
-      spanHTML: ' [<a href="tag:killfile%20user" class="dtm_killfile_kill">kill</a>]' +
+      spanHTML: ' [<a href="tag:killfile%20user" class="dtm_killfile_kill">hush</a>]' +
         '&#8203;[<a href="tag:hide%20comment" class="dtm_killfile_hide">hide&nbsp;comment</a>]',
       spanHTMLuser:
       function(user, userspec) {
@@ -515,7 +515,7 @@ define && define("scenarios", ["./clientUtil"], function(culib) {
       sigHrefMatch: '$1',
       mangleAppend: "descendant::a[contains(@href,'livejournal.com/') and " +
         "substring-after(@href,'livejournal.com/')=''][1]/..",
-      spanHTML: '<br>[<a href="tag:killfile%20user" class="dtm_killfile_kill">kill</a>]' +
+      spanHTML: '<br>[<a href="tag:killfile%20user" class="dtm_killfile_kill">hush</a>]' +
         '&#8203;[<a href="tag:hide%20comment" class="dtm_killfile_hide">hide&nbsp;comment</a>]',
       __proto__:killfileScenario.basicScenario()
     };
