@@ -1,9 +1,12 @@
 {
   "name": "killfile",
   "fullName": "Blog Killfile",
+  "homepage": "http://github.com/fizbin/killfile-extension",
   "id": "dtm-killlfile@martin.snowplow.org",
+  "icon": "kficon48.png",
+  "icon64": "kficon64.png",
   "description": "Provides a killfile for certain blogs' comment sections.",
-  "author": "Daniel Martin",
+  "author": "Daniel Martin <martin@snowplow.org>",
   "license": "BSD 2-clause",
   "version": "0.1"
 }
