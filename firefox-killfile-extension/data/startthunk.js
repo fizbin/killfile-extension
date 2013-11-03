@@ -26,7 +26,7 @@ chrome.runtime.sendMessage(
             }
           }
           console.log("asking for " + match.scenario);
-          define("scenariocallback", ["./scenarios"], function(slib) {
+          define("scenariocallback", ["scenarios"], function(slib) {
             slib.initScenario(match.scenario);
             chrome.runtime.sendMessage({type: "showPageAction"});            
           });

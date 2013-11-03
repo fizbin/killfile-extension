@@ -3,8 +3,9 @@
 // being defined.
 
 var define;
+console.log("define?");
 (function () {
-  "use strict";
+  //"use stricdsst";
 
   var callbacks = {};
   var defined = {};
@@ -52,6 +53,8 @@ var define;
 
   define = _define;
 })();
+
+console.log("Is define? " + (true == define));
 
 /// Local Variables: ///
 /// mode: Javascript ///
