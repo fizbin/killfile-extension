@@ -13,7 +13,10 @@ define && define(
                 scen.foreachCommentUnder(
                   node, scen.commentmidxpath,
                   function(c) {
-                    scen.checkComment(scen.handleComment(c));
+                    var commentNode = scen.handleComment(c);
+                    if (commentNode) {
+                      scen.checkComment(commentNode);
+                    }
                   });
               }
             );

@@ -4,9 +4,6 @@
 // distributed under the file LICENSE found in this
 // directory.
 
-var dtm_killfile_initScenario;
-var dtm_killfile_killfileScenario;
-
 define && define("scenarios", ["./clientUtil"], function(culib) {
   var sendMessage = culib.sendMessage;
   function showComment(spot) {
@@ -126,15 +123,20 @@ define && define("scenarios", ["./clientUtil"], function(culib) {
       foreachCommentUnder:
       function(node, commentFinder, loopBody) {
         if (!loopBody) {return null;}
-        console.log('foreachCommentUnder: ' + commentFinder);
-        console.log(node);
+        progresslog('foreachCommentUnder: ' + commentFinder);
         var snap = document.evaluate(commentFinder,
                                      node, null, 
                                      XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
                                      null );
-        console.log('snapshot length is ' + snap.snapshotLength);
+        progresslog('snapshot length is ' + snap.snapshotLength);
         for (var i=0; i < snap.snapshotLength; i++) {
-          loopBody(snap.snapshotItem(i));
+          progresslog('tnum: ' + i);
+          try {
+            loopBody(snap.snapshotItem(i));
+          } catch (e) {
+            console.warn("Error enountered: " + e.name + ": " + e.message);
+            console.warn(e.stack);
+          }
         }
       },
       getUserspec:
@@ -777,14 +779,10 @@ define && define("scenarios", ["./clientUtil"], function(culib) {
     };
   };
 
-
   function initScenario(scenario) {
     killfileScenario[scenario]().manglePage();
     reviewContent();
   }
-
-  dtm_killfile_initScenario = initScenario;
-  dtm_killfile_killfileScenario = killfileScenario;
 
   return {
     initScenario: initScenario,

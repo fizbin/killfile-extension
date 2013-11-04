@@ -1,12 +1,12 @@
 {
-  "name" : "KillFile",
-  "version" : "0.0.1.99",
+  "name" : "Blog Comment Killfile",
+  "short_name" : "killfile",
   "description" : "Provides a killfile for certain blogs.",
   "background" : {
     "scripts": [ "serverload.js", "define.js", "background.js" ],
     "persistent": true
   },
-  "icons": { "128": "kficon128.png" },
+  "icons": { "128": "kficon128.png", "48": "kficon48.png" },
   "permissions" : [ "tabs", "http://*/*" , "https://*/*", "storage", "alarms" ],
   "content_scripts" : [
     {
@@ -32,5 +32,6 @@
     },
     "default_title": "Killfile active"
   },
-  "manifest_version": 2
+  "manifest_version": 2,
+  "version" : "0.2.0"
 }
