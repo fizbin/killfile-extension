@@ -539,7 +539,8 @@ define && define("scenarios", ["./clientUtil"], function(culib) {
     return {
       commenttopxpath: "//dl[@id='comments-block']/dt",
       sigbit: ".",
-      precedingBit: '(?: *<div class="profile-image-container">.*?</div>)? *',
+      precedingBit: '(?:<a name=[^>]*> *(?:</a>))? *'
+        + '(?: *<div class="[^"]*image-container[^>]*>.*?</div>)? *',
       followingBit: '\\b *said\\W+',
       mangleAppend: ".",
       replaceXpath: ".|following-sibling::dd[1]",
