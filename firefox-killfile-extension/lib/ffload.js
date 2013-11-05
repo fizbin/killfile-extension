@@ -43,7 +43,12 @@ function sandboxDefine(dryRun, libname, deps, generator) {
     }
   }
   if (!dryRun) {
-    this.definedModules[this.nowLoading] = generator.apply(this, args);
+    var module = {name: libname, exports: {}};
+    var genresult = generator.apply(module, args);
+    if (genresult) {
+      module.exports = genresult;
+    }
+    this.definedModules[this.nowLoading] = module.exports;
   }
   this.defined.push(this.nowLoading);
 }

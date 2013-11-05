@@ -40,8 +40,12 @@ var define;
         return 0;
       }
     }
-    var ctorResult = ctor.apply(ctor, args);
-    defined[name] = ctorResult;
+    var module = {name: name, exports: {}};
+    var genresult = ctor.apply(module, args);
+    if (genresult) {
+      module.exports = genresult;
+    }
+    defined[name] = module.exports;
     if (name in callbacks) {
       var cb = callbacks[name];
       delete callbacks[name];
