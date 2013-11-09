@@ -3,7 +3,7 @@
   "short_name" : "killfile",
   "description" : "Provides a killfile for certain blogs.",
   "background" : {
-    "scripts": [ "serverload.js", "define.js", "background.js" ],
+    "scripts": [ "serverload.js", "define.js", "scenarios.js", "background.js" ],
     "persistent": true
   },
   "icons": { "128": "kficon128.png", "48": "kficon48.png" },
@@ -33,5 +33,5 @@
     "default_title": "Killfile active"
   },
   "manifest_version": 2,
-  "version" : "0.2.0"
+  "version": "0.2.1"
 }
