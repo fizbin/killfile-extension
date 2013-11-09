@@ -51,7 +51,7 @@ var define;
       delete callbacks[name];
       cb();
     }
-    return ctorResult;
+    return module.exports;
   }
 
   define = _define;
