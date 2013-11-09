@@ -22,6 +22,23 @@ define && define("scenarios", ["./clientUtil"], function(culib) {
     return div.innerHTML;
   }
 
+  function mkDomNode(name, attrs) {
+    var retval = document.createElement(name);
+    for (prop in attrs) {
+      if (attrs.hasOwnProperty(prop)) {
+        retval.setAttribute(prop, attrs[prop]);
+      }
+    }
+    for (var i=2; i < arguments.length; i++) {
+      var a = arguments[i];
+      if (typeof(a) === "string") {
+        a = document.createTextNode(a);
+      }
+      retval.appendChild(a);
+    }
+    return retval;
+  }
+
   function chkComment(spot) {
     var potentialTroll = spot.getAttribute("dtm_killfile_user");
     if (potentialTroll) {
@@ -163,21 +180,26 @@ define && define("scenarios", ["./clientUtil"], function(culib) {
         progresslog("user: html {" + JSON.stringify(sigHTML) + "} and regexp {" + sigre + "} gave " + escape(user) + "!" + escape(href));
         return [user, escape(user) + "!" + escape(href)];
       },
-      divHTML:
-      '<div class="dtm_killfile_shown"></div>' +
-        '<div class="dtm_killfile_hidden"><p>Comment by __SHORTUSER__ blocked.' +
-        ' <span class="dtm_killfile_select">[<a href="tag:remove%20user%20from%20killfile" class="dtm_killfile_unkill">unhush</a>]' +
-        '&#8203;[<a href="tag:show%20comment" class="dtm_killfile_show">show&nbsp;comment</a>]' +
-        '</span></p></div>',
       divHTMLuser:
       function(user, userspec) {
-        return this.divHTML.replace(/__SHORTUSER__/g,escapeHTML(user))
-          .replace(/__USER__/g,escapeHTML(userspec));
+        var m = mkDomNode;
+        return m('div', 
+                 {"class": "dtm_killfile_commentholder dtm_killfile_commentholder_showcomment",
+                  "dtm_killfile_user": userspec},
+                 m('div', {'class':'dtm_killfile_shown'}),
+                 m('div', {'class':'dtm_killfile_hidden'},
+                   m('p', {}, 'Comment by ' + user + ' blocked. ',
+                     m('span', {'class': 'dtm_killfile_select'}, '[',
+                       m('a', {'href': 'tag:remove%20user%20from%20killfile',
+                               'class':"dtm_killfile_unkill"}, 'unhush'),
+                       ']\u200B[',
+                       m('a', {'href': "tag:show%20comment",
+                               'class': "dtm_killfile_show"}, 'show\u00A0comment'),
+                       ']'))));
       },
       getEmptyHolder:
       function(commentNode, user, userspec) {
-        var ddiv = document.createElement('div');
-        ddiv.innerHTML = this.divHTMLuser(user, userspec);
+        var ddiv = this.divHTMLuser(user, userspec);
         if (this.tabXpath) {
           var tabNode = document.evaluate(this.tabXpath, commentNode, null,
                                           XPathResult.ANY_UNORDERED_NODE_TYPE, null);
@@ -187,18 +209,17 @@ define && define("scenarios", ["./clientUtil"], function(culib) {
             tabtarget.insertBefore(tabNode.cloneNode(true),tabtarget.firstChild);
           }
         }
-        ddiv.setAttribute("class",
-                          "dtm_killfile_commentholder"
-                          + " dtm_killfile_commentholder_showcomment");
-        ddiv.setAttribute("dtm_killfile_user", userspec);
         return ddiv;
       },
-      spanHTML: ' [<a href="tag:killfile%20user" class="dtm_killfile_kill">hush</a>]' +
-        '&#8203;[<a href="tag:hide%20comment" class="dtm_killfile_hide">hide&nbsp;comment</a>]',
       spanHTMLuser:
       function(user, userspec) {
-        return this.spanHTML.replace(/__SHORTUSER__/g,escapeHTML(user))
-          .replace(/__USER__/g,escapeHTML(userspec));
+        var m = mkDomNode;
+        return m('span', {'class': 'dtm_killfile_select'},
+                 ' [', m('a', {'href': "tag:killfile%20user",
+                               'class': "dtm_killfile_kill"}, 'hush'),
+                 ']\u200B[', m('a', {'href': "tag:hide%20comment",
+                                     'class': "dtm_killfile_hide"},
+                               'hide\u00A0comment'), ']');
       },
       mangleCommentContent:
       function(contentNode, user, userspec) {
@@ -215,9 +236,7 @@ define && define("scenarios", ["./clientUtil"], function(culib) {
         }
         if (snap3 && snap3.singleNodeValue) {
           var target = snap3.singleNodeValue;
-          var cspan = document.createElement('span');
-          cspan.innerHTML = this.spanHTMLuser(user, userspec);
-          cspan.className = "dtm_killfile_select";
+          var cspan = this.spanHTMLuser(user, userspec);
           if (useBefore) {
             target.parentNode.insertBefore(cspan,target);
           } else {
@@ -517,8 +536,17 @@ define && define("scenarios", ["./clientUtil"], function(culib) {
       sigHrefMatch: '$1',
       mangleAppend: "descendant::a[contains(@href,'livejournal.com/') and " +
         "substring-after(@href,'livejournal.com/')=''][1]/..",
-      spanHTML: '<br>[<a href="tag:killfile%20user" class="dtm_killfile_kill">hush</a>]' +
-        '&#8203;[<a href="tag:hide%20comment" class="dtm_killfile_hide">hide&nbsp;comment</a>]',
+      spanHTMLuser:
+      function(user, userspec) {
+        var m = mkDomNode;
+        return m('span', {'class': 'dtm_killfile_select'},
+                 m('br'),
+                 ' [', m('a', {'href': "tag:killfile%20user",
+                               'class':"dtm_killfile_kill"}, 'hush'),
+                 ']\u200B[', m('a', {'href': "tag:hide%20comment",
+                                     'class': "dtm_killfile_hide"},
+                               'hide\u00A0comment'), ']');
+      },
       __proto__:killfileScenario.basicScenario()
     };
   }
