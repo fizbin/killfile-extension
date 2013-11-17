@@ -26,6 +26,15 @@ console.log("scenarioDeps is " + JSON.stringify(scenarioDeps));
 
 function ignoreMessage() {}
 
+function onBulkTrollCheck(request, sender, sendResponse) {
+  var response = {};
+  request.trolls.forEach(function (ptroll) {
+    response[ptroll] = trollStore.checkTroll(ptroll);
+  });
+  sendResponse(response);
+  return true;
+}
+
 function onTrollCheck(request, sender, sendResponse) {
   sendResponse({troll: request.troll,
                 isTroll: trollStore.checkTroll(request.troll)});
@@ -47,6 +56,7 @@ function onTrollAdd(request, sender, sendResponse) {
 var messageFuncs = {init: ignoreMessage,
                     loadLibrary: ignoreMessage,
                     showPageAction: ignoreMessage,
+                    bulkTrollCheck: onBulkTrollCheck,
                     trollCheck: onTrollCheck,
                     trollDel: onTrollDel,
                     trollAdd: onTrollAdd}

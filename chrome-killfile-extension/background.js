@@ -35,6 +35,15 @@ define && define(
       return false;
     }
 
+    function onBulkTrollCheck(request, sender, sendResponse) {
+      var response = {};
+      request.trolls.forEach(function (ptroll) {
+        response[ptroll] = trollStore.checkTroll(ptroll);
+      });
+      sendResponse(response);
+      return true;
+    }
+
     function onTrollCheck(request, sender, sendResponse) {
       sendResponse({troll: request.troll,
                     isTroll: trollStore.checkTroll(request.troll)});
@@ -56,6 +65,7 @@ define && define(
     var messageFuncs = {init: onInitMessage,
                         loadLibrary: onLoadLibrary,
                         showPageAction: onShowPageAction,
+                        bulkTrollCheck: onBulkTrollCheck,
                         trollCheck: onTrollCheck,
                         trollDel: onTrollDel,
                         trollAdd: onTrollAdd}

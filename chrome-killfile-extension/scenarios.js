@@ -15,11 +15,15 @@ define && define("scenarios", ["./clientUtil"], function(culib) {
     spot.classList.add("dtm_killfile_commentholder_hidecomment");
   }
 
-  function escapeHTML(s) {
-    var div = document.createElement('div');
-    var text = document.createTextNode(s);
-    div.appendChild(text);
-    return div.innerHTML;
+  function deHTML(s) { // interpret &lt; as <, &amp; as &, etc.
+    var parsedDoc = (new DOMParser()).parseFromString(
+        '<any>' + s + '</any>', 'text/xml');
+    if (parsedDoc.evaluate('.//*[local-name()="parsererror"]', parsedDoc,
+                           null, XPathResult.BOOLEAN_TYPE, null).booleanValue) {
+      return s; // Invalid markup, don't attempt anything
+    }
+    return parsedDoc.evaluate('.', parsedDoc, null,
+                              XPathResult.STRING_TYPE, null).stringValue;
   }
 
   function mkDomNode(name, attrs) {
@@ -39,18 +43,46 @@ define && define("scenarios", ["./clientUtil"], function(culib) {
     return retval;
   }
 
+  var trollsToCheck = [];
+  var trollsCbFuncs = {};
+
+  function doTrollCheck(potentialTroll, cb) {
+    if (trollsToCheck.length == 0) {
+      window.setTimeout(function () {
+        var oldCbs = trollsCbFuncs;
+        var oldTrolls = trollsToCheck;
+        trollsCbFuncs = {};
+        trollsToCheck = [];
+        sendMessage({type:'bulkTrollCheck', trolls:oldTrolls},
+                    function (response) {
+                      console.log('Got bulk trollcheck response: ');
+                      oldTrolls.forEach(function(troll) {
+                        oldCbs[troll]({troll: troll, isTroll: response[troll]});
+                      });
+                      console.log('Finished bulkcheck processing');
+                    });
+      }, 0);
+    }
+    if (potentialTroll in trollsCbFuncs) {
+      var oldCb = trollsCbFuncs[potentialTroll];
+      trollsCbFuncs[potentialTroll] = function(r) {oldCb(r); cb(r);}
+    } else {
+      trollsToCheck.push(potentialTroll);
+      trollsCbFuncs[potentialTroll] = cb;
+    }
+  }
+
   function chkComment(spot) {
     var potentialTroll = spot.getAttribute("dtm_killfile_user");
     if (potentialTroll) {
-      sendMessage(
-        {type:'trollCheck', troll:potentialTroll},
-        function (response) {
-          if (response.isTroll) {
-            hideComment(spot);
-          } else {
-            showComment(spot);
-          }
-        });
+      doTrollCheck(potentialTroll,
+                   function (response) {
+                     if (response.isTroll) {
+                       hideComment(spot);
+                     } else {
+                       showComment(spot);
+                     }
+                   });
     }
   }
 
@@ -101,7 +133,7 @@ define && define("scenarios", ["./clientUtil"], function(culib) {
     }
   }
 
-  var kf_debug = true;
+  var kf_debug = false;
 
   function progresslog(logstr) {
     if (kf_debug) {console.log(logstr);}
@@ -188,7 +220,7 @@ define && define("scenarios", ["./clientUtil"], function(culib) {
                   "dtm_killfile_user": userspec},
                  m('div', {'class':'dtm_killfile_shown'}),
                  m('div', {'class':'dtm_killfile_hidden'},
-                   m('p', {}, 'Comment by ' + user + ' blocked. ',
+                   m('p', {}, 'Comment by ' + deHTML(user) + ' blocked. ',
                      m('span', {'class': 'dtm_killfile_select'}, '[',
                        m('a', {'href': 'tag:remove%20user%20from%20killfile',
                                'class':"dtm_killfile_unkill"}, 'unhush'),
@@ -375,6 +407,15 @@ define && define("scenarios", ["./clientUtil"], function(culib) {
         + "//li[contains(concat(' ', @class, ' '), ' comment ')]/div",
       sigbit: "div[contains(concat(' ', @class, ' '), ' comment-author ')]//"
         + "cite[contains(concat(' ', @class, ' '), ' fn ')]",
+      __proto__:killfileScenario.basicScenario()
+    };
+  };
+
+  killfileScenario['popehatScenario'] = function() {
+    return {
+      commenttopxpath: "//ol[contains(concat(' ', @class, ' '), ' commentlist ')]/li",
+      sigbit: ".//span[@class='comment-author']",
+      get mangleAppend() {return this.sigbit + '/parent::*'},
       __proto__:killfileScenario.basicScenario()
     };
   };
