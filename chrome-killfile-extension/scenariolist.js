@@ -163,7 +163,7 @@ define && define("scenariolist", [], function () {
       smalldeadanimals:[{scenario:'mtScenario1',
                          hrefpat:"^[^/]*//[^/]*/\\w*/[0-9]",}],
       freerepublic:[{scenario:'freeperScenario',
-                     hrefpat:"^[^/]*//[^/]*/focus/f-(news|chat)/[0-9]*/(replies|posts)",}],
+                     hrefpat:"^[^/]*//[^/]*/focus/f-\\w+/[0-9]*/(replies|posts)",}],
       nytimes:[{scenario:'nytimesBlogsScenario',
                 hrefpat:"^[^/]*//[^/]*\\.blogs\\.[^/]*/([0-9]*/){3}[\\w-]+/",}],
       villagevoice:[{scenario:'voiceScenario',
