@@ -6,13 +6,15 @@
 
 define && define("scenarios", ["./clientUtil"], function(culib) {
   var sendMessage = culib.sendMessage;
-  function showComment(spot) {
+  function showComment(spot, k) {
     spot.classList.remove("dtm_killfile_commentholder_hidecomment");
     spot.classList.add("dtm_killfile_commentholder_showcomment");
+    k && k();
   }
-  function hideComment(spot) {
+  function hideComment(spot, k) {
     spot.classList.remove("dtm_killfile_commentholder_showcomment");
     spot.classList.add("dtm_killfile_commentholder_hidecomment");
+    k && k();
   }
 
   function deHTML(s) { // interpret &lt; as <, &amp; as &, etc.
@@ -45,21 +47,25 @@ define && define("scenarios", ["./clientUtil"], function(culib) {
 
   var trollsToCheck = [];
   var trollsCbFuncs = {};
+  var postTrollsCb = null;
 
   function doTrollCheck(potentialTroll, cb) {
     if (trollsToCheck.length == 0) {
       window.setTimeout(function () {
         var oldCbs = trollsCbFuncs;
         var oldTrolls = trollsToCheck;
+        var oldPost = postTrollsCb;
         trollsCbFuncs = {};
         trollsToCheck = [];
+        postTrollsCb = null;
         sendMessage({type:'bulkTrollCheck', trolls:oldTrolls},
                     function (response) {
-                      console.log('Got bulk trollcheck response: ');
+                      console.log('Got bulk trollcheck response');
                       oldTrolls.forEach(function(troll) {
                         oldCbs[troll]({troll: troll, isTroll: response[troll]});
                       });
                       console.log('Finished bulkcheck processing');
+                      oldPost && oldPost();
                     });
       }, 0);
     }
@@ -86,49 +92,53 @@ define && define("scenarios", ["./clientUtil"], function(culib) {
     }
   }
 
-  function reviewContent() {
+  function reviewContent(k) {
     var snap = document.getElementsByClassName("dtm_killfile_commentholder");
     for (var i=0; i < snap.length; i++) {
       var spot = snap[i];
-      var potentialTroll = spot.getAttribute("dtm_killfile_user");
-      // Javascript scoping rules suck
       chkComment(spot);
     }
+    postTrollsCb = postTrollsCb || k;
   }
 
-  function addTroll(troll) {
+  function addTroll(troll, k) {
     sendMessage(
       {type:'trollAdd', troll:troll},
-      reviewContent);
+      function () {reviewContent(k);});
   }
 
-  function delTroll(troll) {
+  function delTroll(troll, k) {
     sendMessage(
       {type:'trollDel', troll:troll},
-      reviewContent);
+      function () {reviewContent(k);});
   }
 
   function handleClick(evt) {
     var holderdiv = this;
     var evtar = evt.target;
     var clazz = evtar.getAttribute('class');
-    if (clazz) {
+    if (clazz && (0 == clazz.indexOf('dtm_killfile_'))) {
+      var oldtop = holderdiv.getBoundingClientRect().top;
+      var restorefunc = function() {
+        var newtop = holderdiv.getBoundingClientRect().top;
+        window.scrollBy(0, newtop - oldtop);
+      };
       if (clazz == "dtm_killfile_show") {
         evt.stopPropagation();
         evt.preventDefault();
-        showComment(holderdiv);
+        showComment(holderdiv, restorefunc);
       } else if (clazz == "dtm_killfile_hide") {
         evt.stopPropagation();
         evt.preventDefault();
-        hideComment(holderdiv);
+        hideComment(holderdiv, restorefunc);
       } else if (clazz == "dtm_killfile_kill") {
         evt.stopPropagation();
         evt.preventDefault();
-        addTroll(holderdiv.getAttribute('dtm_killfile_user'));
+        addTroll(holderdiv.getAttribute('dtm_killfile_user'), restorefunc);
       } else if (clazz == "dtm_killfile_unkill") {
         evt.stopPropagation();
         evt.preventDefault();
-        delTroll(holderdiv.getAttribute('dtm_killfile_user'));
+        delTroll(holderdiv.getAttribute('dtm_killfile_user'), restorefunc);
       }
     }
   }
