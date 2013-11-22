@@ -148,6 +148,9 @@ define && define("scenarios", ["./clientUtil"], function(culib) {
   function progresslog(logstr) {
     if (kf_debug) {console.log(logstr);}
   }
+  function enableProgressLog() {
+    kf_debug = true;
+  }
 
   var killfileScenario = {};
 
@@ -866,7 +869,8 @@ define && define("scenarios", ["./clientUtil"], function(culib) {
 
   return {
     initScenario: initScenario,
-    killfileScenario: killfileScenario
+    killfileScenario: killfileScenario,
+    enableProgressLog: enableProgressLog
   };
 });
 

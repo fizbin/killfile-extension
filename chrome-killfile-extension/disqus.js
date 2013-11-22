@@ -44,9 +44,9 @@ define && define(
         commenttopxpath: '//div[@data-role="post-content"]',
         commentmidxpath: './/div[@data-role="post-content"]',
         aHrefAttribute: 'data-user',
-        sigbit: './/header/*[contains(concat(" ", @class, " "), " author ")]',
+        sigbit: './/header//*[contains(concat(" ", @class, " "), " author ")]',
         mangleAppend: './/header'
-          + '/*[contains(concat(" ", @class, " "), " post-meta ")]',
+          + '//*[contains(concat(" ", @class, " "), " post-meta ")]',
         __proto__:scenarios.killfileScenario.basicScenario()
       };
       function cb(mr, mo) {
@@ -54,6 +54,7 @@ define && define(
         if (pl) {
           console.log('found post-list');
           mo.disconnect();
+          // scenarios.enableProgressLog();
           postListAttach();
         }
       };
