@@ -4,7 +4,7 @@
 // distributed under the file LICENSE found in this
 // directory.
 
-define && define(
+(typeof define === "function") && define(
   "background", ["./scenariolist", "./trollstore"], function(sllib, tslib) {
     var trollStore = tslib.trollStore;
 

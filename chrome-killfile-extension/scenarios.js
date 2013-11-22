@@ -4,7 +4,7 @@
 // distributed under the file LICENSE found in this
 // directory.
 
-define && define("scenarios", ["./clientUtil"], function(culib) {
+(typeof define === "function") && define("scenarios", ["./clientUtil"], function(culib) {
   var sendMessage = culib.sendMessage;
   function showComment(spot, k) {
     spot.classList.remove("dtm_killfile_commentholder_hidecomment");

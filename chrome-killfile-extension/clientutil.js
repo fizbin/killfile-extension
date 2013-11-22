@@ -1,4 +1,4 @@
-define && define("clientUtil", [], function() {
+(typeof define === "function") && define("clientUtil", [], function() {
   return {sendMessage: chrome.runtime.sendMessage};
 });
 

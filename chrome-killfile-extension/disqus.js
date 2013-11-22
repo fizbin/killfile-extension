@@ -1,5 +1,5 @@
 // Handle disqus iframed comments
-define && define(
+(typeof define === "function") && define(
   "disqus", ["./scenarios", "./clientUtil"], function (scenarios, clientUtil) {
     "use strict";
     var scen;

@@ -1,4 +1,4 @@
-define && define("clientUtil", [], function() {
+(typeof define === "function") && define("clientUtil", [], function() {
   var msgCount = 0;
   return {sendMessage: function(msg, responseFn) {
     msgCount++;

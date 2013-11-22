@@ -4,7 +4,7 @@
 // distributed under the file LICENSE found in this
 // directory.
 
-define && define("trollstore", ["sdk/simple-storage"], function (ss) {
+(typeof define === "function") && define("trollstore", ["sdk/simple-storage"], function (ss) {
   "use strict";
 
   var trollStore = new (function () {

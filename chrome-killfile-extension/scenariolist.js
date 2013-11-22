@@ -4,7 +4,7 @@
 // distributed under the file LICENSE found in this
 // directory.
 
-define && define("scenariolist", [], function () {
+(typeof define === "function") && define("scenariolist", [], function () {
   var scenariolist = {needsInit:1};
 
   function initConstants() {
