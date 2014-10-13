@@ -1,8 +1,8 @@
 .dtm_killfile_commentholder_hidecomment > .dtm_killfile_shown {
-    display: none;
+    display: none !important;
 }
 .dtm_killfile_commentholder_showcomment > .dtm_killfile_hidden {
-    display: none;
+    display: none !important;
 }
 
 /* prettify links */

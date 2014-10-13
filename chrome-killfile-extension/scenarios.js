@@ -426,9 +426,13 @@
 
   killfileScenario['popehatScenario'] = function() {
     return {
-      commenttopxpath: "//ol[contains(concat(' ', @class, ' '), ' commentlist ')]/li",
-      sigbit: ".//span[@class='comment-author']",
-      get mangleAppend() {return this.sigbit + '/parent::*'},
+      get mangleAppend() {
+        return "div[contains(concat(' ', @class, ' '), ' commentmetadata ')]";
+      },
+      sigbit: "div[contains(concat(' ', @class, ' '), ' comment-author ')]//"
+        + "cite[contains(concat(' ', @class, ' '), ' fn ')]",
+      commenttopxpath: "//ol[contains(concat(' ', @class, ' '), ' commentlist ')]"
+        + "//li[contains(concat(' ', @class, ' '), ' comment ')]/div",
       __proto__:killfileScenario.basicScenario()
     };
   };

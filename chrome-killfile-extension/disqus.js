@@ -13,9 +13,12 @@
                 scen.foreachCommentUnder(
                   node, scen.commentmidxpath,
                   function(c) {
+                    if (! c.__kf_handled__) {
                     var commentNode = scen.handleComment(c);
+                    c.__kf_handled__ = 1;
                     if (commentNode) {
                       scen.checkComment(commentNode);
+                    }
                     }
                   });
               }
@@ -34,7 +37,7 @@
             });
         }
       );
-      mo.observe(pl, {childList: true});
+      mo.observe(pl, {subtree: true, childList: true});
       clientUtil.sendMessage({type: "showPageAction"});
     }
 
