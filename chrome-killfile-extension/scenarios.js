@@ -4,7 +4,7 @@
 // distributed under the file LICENSE found in this
 // directory.
 
-(typeof define === "function") && define("scenarios", ["./clientUtil"], function(culib) {
+(typeof define === 'function') && define('scenarios', ['./clientUtil'], function(culib) {
   var sendMessage = culib.sendMessage;
   function showComment(spot, k) {
     spot.classList.remove("dtm_killfile_commentholder_hidecomment");
@@ -71,7 +71,7 @@
     }
     if (potentialTroll in trollsCbFuncs) {
       var oldCb = trollsCbFuncs[potentialTroll];
-      trollsCbFuncs[potentialTroll] = function(r) {oldCb(r); cb(r);}
+      trollsCbFuncs[potentialTroll] = function(r) {oldCb(r); cb(r);};
     } else {
       trollsToCheck.push(potentialTroll);
       trollsCbFuncs[potentialTroll] = cb;
@@ -143,7 +143,7 @@
     }
   }
 
-  var kf_debug = false;
+  var kf_debug = true;
 
   function progresslog(logstr) {
     if (kf_debug) {console.log(logstr);}
@@ -395,81 +395,80 @@
         this.foreachComment(function (c) {me.handleComment(c)});
       }
     };
-  }
+  };
 
   killfileScenario['wordpressScenario'] = function() {
-    return {
-      get mangleBefore() {return this.sigbit + '/following::*'},
-      __proto__:killfileScenario.basicScenario()
-    };
+    return Object.create(killfileScenario.basicScenario(), {
+      mangleBefore: {
+        get: function() {return this.sigbit + '/following::*'}
+      }
+    });
   };
 
   // Thanks to Christina Schelin, http://christina267.wordpress.com
   killfileScenario['wordpressScenario2'] = function() {
-    return {
-      commenttopxpath: "//ol[@id='commentlist']/li",
-      sigbit: "span[@class='commentauthor']",
-      __proto__:killfileScenario.wordpressScenario()
-    };
+    return Object.create(killfileScenario.wordpressScenario(), {
+      commenttopxpath: { value: "//ol[@id='commentlist']/li" },
+      sigbit: { value: "span[@class='commentauthor']" }
+    });
   };
 
   killfileScenario['wordpressScenario3'] = function() {
-    return {
-      get mangleAppend() {return this.sigbit + '/parent::*'},
-      commenttopxpath: "//ol[contains(concat(' ', @class, ' '), ' commentlist ')]"
-        + "//li[contains(concat(' ', @class, ' '), ' comment ')]/div",
-      sigbit: "div[contains(concat(' ', @class, ' '), ' comment-author ')]//"
-        + "cite[contains(concat(' ', @class, ' '), ' fn ')]",
-      __proto__:killfileScenario.basicScenario()
-    };
+    return Object.create(killfileScenario.basicScenario(), {
+      mangleAppend: { get: function() {return this.sigbit + '/parent::*'} },
+      commenttopxpath: { value:
+            "//ol[contains(concat(' ', @class, ' '), ' commentlist ')]"
+            + "//li[contains(concat(' ', @class, ' '), ' comment ')]/div" },
+      sigbit: { value:
+            "div[contains(concat(' ', @class, ' '), ' comment-author ')]//"
+            + "cite[contains(concat(' ', @class, ' '), ' fn ')]" }
+    });
   };
 
   killfileScenario['popehatScenario'] = function() {
-    return {
-      get mangleAppend() {
-        return "div[contains(concat(' ', @class, ' '), ' commentmetadata ')]";
+    return Object.create(killfileScenario.basicScenario(), {
+      mangleAppend: { value:
+          "div[contains(concat(' ', @class, ' '), ' commentmetadata ')]"
       },
-      sigbit: "div[contains(concat(' ', @class, ' '), ' comment-author ')]//"
-        + "cite[contains(concat(' ', @class, ' '), ' fn ')]",
-      commenttopxpath: "//ol[contains(concat(' ', @class, ' '), ' commentlist ')]"
-        + "//li[contains(concat(' ', @class, ' '), ' comment ')]/div",
-      __proto__:killfileScenario.basicScenario()
-    };
+      sigbit: { value:
+            "div[contains(concat(' ', @class, ' '), ' comment-author ')]//"
+            + "cite[contains(concat(' ', @class, ' '), ' fn ')]" },
+      commenttopxpath: { value:
+            "//ol[contains(concat(' ', @class, ' '), ' commentlist ')]"
+            + "//li[contains(concat(' ', @class, ' '), ' comment ')]/div" }
+    });
   };
 
   killfileScenario['riotactScenario'] = function() {
-    return {
-      get mangleAppend() {return this.sigbit + '/..'},
-      precedingBit: 'Comment by ',
-      followingBit: ' [-\u2014] ',
-      commenttopxpath: "//ol[@id='commentlist']/li",
-      __proto__:killfileScenario.basicScenario()
-    };
+    return Object.create(killfileScenario.basicScenario(), {
+      mangleAppend: {get: function() {return this.sigbit + '/..'}},
+      precedingBit: {value: 'Comment by '},
+      followingBit: {value: ' [-\u2014] '},
+      commenttopxpath: {value: "//ol[@id='commentlist']/li"}
+    });
   };
 
   killfileScenario['pandagonNewScenario'] = function() {
-    return {
-      commenttopxpath: "//div[@id='content']/div[starts-with(@class,'comment-body')]",
-      sigbit: "div[@class='comment-posted']",
-      precedingBit: 'Comment #\\d*: ',
-      followingBit: ' on \\S+ at <a',
-      mangleAppend: "div[@class='comment-posted']",
-      __proto__:killfileScenario.basicScenario()
-    };
+    return Object.create(killfileScenario.basicScenario(), {
+      commenttopxpath: {value: "//div[@id='content']/div[starts-with(@class,'comment-body')]"},
+      sigbit: {value: "div[@class='comment-posted']"},
+      precedingBit: {value: 'Comment #\\d*: '},
+      followingBit: {value: ' on \\S+ at <a'},
+      mangleAppend: {value: "div[@class='comment-posted']"}
+    });
   };
 
   killfileScenario['feministingNewScenario'] = function() {
-    return {
-      commenttopxpath: "//div[@id='comments']//" + 
-        "li[contains(concat(' ', @class, ' '), ' comment ')]",
-      sigbit: ".//div[contains(concat(' ', @class, ' '), ' comment-author ')]/" +
-        "span[contains(concat(' ', @class, ' '), ' fn ')]",
-      replaceXpath: "./div",
-      precedingBit: '',
-      followingBit: '',
-      get mangleAppend() {return this.sigbit + '/..'},
-      __proto__:killfileScenario.basicScenario()
-    };
+    return Object.create(killfileScenario.basicScenario(), {
+      commenttopxpath: {value: "//div[@id='comments']//" + 
+        "li[contains(concat(' ', @class, ' '), ' comment ')]"},
+      sigbit: {value: ".//div[contains(concat(' ', @class, ' '), ' comment-author ')]/" +
+        "span[contains(concat(' ', @class, ' '), ' fn ')]"},
+      replaceXpath: {value: "./div"},
+      precedingBit: {value: ''},
+      followingBit: {value: ''},
+      mangleAppend: {get: function() {return this.sigbit + '/..'}}
+    });
   };
 
   killfileScenario['feministingNewFrontPageScenario'] = function() {
@@ -482,7 +481,7 @@
       mangleAppend: "div[@class='posted']",
       __proto__:killfileScenario.basicScenario()
     };
-  }
+  };
 
   // thanks to Christina Schelin, http://christina267.wordpress.com/
   killfileScenario['voiceScenario'] = function() {
@@ -511,7 +510,7 @@
       commenttopxpath: "//span[starts-with(@id,'ljcmt') and ./table[position() = 1 and @class='talk-comment']]",
       __proto__:killfileScenario.livejournalScenario()
     };
-  }
+  };
 
   killfileScenario['livejournalScenario2'] = function() {
     return {
@@ -520,7 +519,7 @@
       tabXpath: '',
       __proto__:killfileScenario.livejournalScenario()
     };
-  }
+  };
 
   killfileScenario['livejournalScenario3'] = function() {
     return {
@@ -578,7 +577,7 @@
       precedingBit: '(?:<span class="[^"]*text[^"]*">[^<>]*</span>)? *(?:<span[^>]*lj:user[^>]*>.*?</a>)?',
       __proto__:killfileScenario.basicScenario()
     };
-  }
+  };
 
   killfileScenario['ljfriendsScenario'] = function() {
     // If you want this, see the comments in "scenariolist" below
@@ -607,7 +606,7 @@
       },
       __proto__:killfileScenario.basicScenario()
     };
-  }
+  };
 
   killfileScenario['pandasThumbScenario'] = function() {
     return {
@@ -619,7 +618,7 @@
       mangleBefore: ".//span[contains(concat(' ', @class, ' '), ' byline ')]",
       __proto__:killfileScenario.basicScenario()
     };
-  }
+  };
 
   killfileScenario['blogspotDLScenario'] = function() {
     return {
@@ -632,7 +631,7 @@
       replaceXpath: ".|following-sibling::dd[1]",
       __proto__:killfileScenario.basicScenario()
     };
-  }
+  };
 
   killfileScenario['blogspotDivScenario'] = function() {
     return {
@@ -643,7 +642,7 @@
       mangleAppend: "div[@class='byline']",
       __proto__:killfileScenario.basicScenario()
     };
-  }
+  };
 
   killfileScenario['blogspotTableScenario'] = function() {
     return {
@@ -667,19 +666,19 @@
       mangleAppend: "div[@class='header']",
       __proto__:killfileScenario.basicScenario()
     };
-  }
+  };
 
   killfileScenario['freethoughtblogsScenario'] = function() {
     return {
-      commenttopxpath: "//ol[@id='comments_list']/li/div[contains(concat(' ',@class,' '),' comment-wrap ')]",
-      sigbit: ".",
+      commenttopxpath: "//ol[@class='comment-list']/li[contains(concat(' ',@class,' '),' comment ')]",
+      sigbit: ".//header[@class='comment-header']",
       sigUserMatch: '$2',
       sigHrefMatch: '$1',
-      sigpat: /^.*<div class="comment-avatar-wrap"> *<img [^>]*src="([^"?]*)["?][^>]*>.*?class="comment-author"> *<cite> *<a [^>]*>([^<]*)<\/a>.*/,
-      mangleAppend: ".//cite[1]",
+      sigpat: /^.*<p[^>]*\bclass="comment-author"[^>]*> *<img [^>]*src="([^"?]*)["?][^>]*> *<span itemprop="name"> *(?:<a [^>]*>)?([^<]*)<.*/,
+      mangleAppend: ".//p[1]",
       __proto__:killfileScenario.basicScenario()
     };
-  }
+  };
 
 
   killfileScenario['mtScenario2'] = function() {
@@ -690,7 +689,7 @@
       mangleAppend: "p[@class='posted']",
       __proto__:killfileScenario.pharyngulaScenario()
     };
-  }
+  };
 
   killfileScenario['typepadScenario'] = function() {
     return {
@@ -699,7 +698,7 @@
       mangleAppend: "p[@class='comment-footer']",
       __proto__:killfileScenario.pharyngulaScenario()
     };
-  }
+  };
 
   killfileScenario['haloscanScenario'] = function() {
     return {
@@ -713,7 +712,7 @@
       sigpat: /^ *(\S[^|]*.*?\S|\S) *\| *(?:<a href="([^\"]*)"[^>]*>Homepage<\/a> *\|)?[^|]*\|[^|]*$/,
       __proto__:killfileScenario.basicScenario()
     };
-  }
+  };
 
   killfileScenario['giveemhellharryScenario1'] = function() {
     return {
@@ -723,8 +722,8 @@
       mangleAppend: "small[last()]",
       precedingBit: '[^<]*',
       __proto__:killfileScenario.basicScenario()
-    }
-  }
+    };
+  };
 
   killfileScenario['giveemhellharryScenario2'] = function() {
     return {
@@ -734,8 +733,8 @@
       mangleAppend: "div[@class='commentauthor']",
       precedingBit: ' *[Bb][Yy] *',
       __proto__:killfileScenario.basicScenario()
-    }
-  }
+    };
+  };
 
   killfileScenario['soapbloxScenario1'] = function() {
     return {
@@ -745,7 +744,7 @@
       precedingBit: '<i>by: *',
       followingBit: ' @[^@]*',
       __proto__:killfileScenario.basicScenario()
-    }
+    };
   };
 
   killfileScenario['truthoutScenario'] = function() {
@@ -786,7 +785,7 @@
       mangleBefore: "descendant::br[last()]",
       __proto__:killfileScenario.basicScenario()
     };
-  }
+  };
 
   killfileScenario['tnrScenario'] = function() {
     return {
@@ -796,7 +795,7 @@
       mangleAppend: ".",
       __proto__:killfileScenario.basicScenario()
     };
-  }
+  };
 
   // One of the many Moveable Type templates
   killfileScenario['mtScenario1'] = function() {
@@ -808,30 +807,36 @@
       mangleAppend: "span[@class='comments-post']",
       __proto__:killfileScenario.basicScenario()
     };
-  }
+  };
+
+  killfileScenario['mtScenario3'] = function() {
+    return Object.create(killfileScenario.basicScenario(), {
+      commenttopxpath: { value: "//div[@class='comments-content']" },
+      sigbit: { value: ".//span[contains(concat(' ',@class,' '),' author ')]" },
+      mangleAppend: { value: "span[@class='byline']" }
+    });
+  };
 
   killfileScenario['freeperScenario'] = function() {
-    return {
-      commenttopxpath: "//div[@class='b2'][1]/following-sibling::div[@class='n2']",
-      sigbit: "preceding-sibling::*[@class='a2'][1]",
-      replaceXpath: ".|preceding-sibling::node()[position() < 7][self::div or self::text()]",
-      precedingBit: '<a .*</a> posted on <b>.*?</b> by',
-      followingBit: '',
-      mangleAppend: ".",
-      __proto__:killfileScenario.basicScenario()
-    };
-  }
+    return Object.create(killfileScenario.basicScenario(), {
+      commenttopxpath: { value: "//div[@class='b2'][1]/following-sibling::div[@class='n2']" },
+      sigbit: { value: "preceding-sibling::*[@class='a2'][1]" },
+      replaceXpath: { value: ".|preceding-sibling::node()[position() < 7][self::div or self::text()]" },
+      precedingBit: { value: '<a .*</a> posted on <b>.*?</b> by' },
+      followingBit: { value: '' },
+      mangleAppend: { value: "." }
+    });
+  };
 
   killfileScenario['nytimesBlogsScenario'] = function() {
-    return {
-      commenttopxpath: "//ul[@class='commentlist']/li",
-      sigbit: ".//p[last()]/cite",
-      replaceXpath: ".",
-      precedingBit: '\\W* Posted by ',
-      followingBit: '',
-      mangleAppend: ".//p[last()]",
-      __proto__:killfileScenario.basicScenario()
-    };
+    return Object.create(killfileScenario.basicScenario(), {
+      commenttopxpath: { value: "//ul[@class='commentlist']/li" },
+      sigbit: { value: ".//p[last()]/cite" },
+      replaceXpath: { value: "." },
+      precedingBit: { value: '\\W* Posted by ' },
+      followingBit: { value: '' },
+      mangleAppend: { value: ".//p[last()]" }
+    });
   };
 
   // fetlife.com

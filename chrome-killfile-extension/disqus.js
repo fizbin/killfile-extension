@@ -43,15 +43,14 @@
 
     function postScenariosLoad() {
       console.log('Scenarios loaded');
-      scen = {
-        commenttopxpath: '//div[@data-role="post-content"]',
-        commentmidxpath: './/div[@data-role="post-content"]',
-        aHrefAttribute: 'data-user',
-        sigbit: './/header//*[contains(concat(" ", @class, " "), " author ")]',
-        mangleAppend: './/header'
-          + '//*[contains(concat(" ", @class, " "), " post-meta ")]',
-        __proto__:scenarios.killfileScenario.basicScenario()
-      };
+      scen = Object.create(scenarios.killfileScenario.basicScenario(), {
+        commenttopxpath: { value: '//div[@data-role="post-content"]'},
+        commentmidxpath: { value: './/div[@data-role="post-content"]'},
+        aHrefAttribute: { value: 'data-user'},
+        sigbit: { value: './/header//*[contains(concat(" ", @class, " "), " author ")]'},
+        mangleAppend: { value: './/header'
+          + '//*[contains(concat(" ", @class, " "), " post-meta ")]'},
+      });
       function cb(mr, mo) {
         var pl = document.getElementById('post-list');
         if (pl) {
