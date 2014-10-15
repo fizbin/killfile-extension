@@ -8,5 +8,5 @@
   "description": "Provides a killfile for certain blogs' comment sections.",
   "author": "Daniel Martin <martin@snowplow.org>",
   "license": "BSD 2-clause",
-  "version": "0.2.5"
+  "version": "0.2.6"
 }
