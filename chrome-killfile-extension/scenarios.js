@@ -811,9 +811,9 @@
 
   killfileScenario['mtScenario3'] = function() {
     return Object.create(killfileScenario.basicScenario(), {
-      commenttopxpath: { value: "//div[@class='comments-content']" },
+      commenttopxpath: { value: "//div[@class='comments-content']/div" },
       sigbit: { value: ".//span[contains(concat(' ',@class,' '),' author ')]" },
-      mangleAppend: { value: "span[@class='byline']" }
+      mangleAppend: { value: ".//span[@class='byline']" }
     });
   };
 

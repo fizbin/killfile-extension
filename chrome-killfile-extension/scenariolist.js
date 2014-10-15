@@ -176,6 +176,8 @@
       popehat:[{scenario:'popehatScenario',
                 hrefpat:"^[^/]*//[^/]*/[0-9]+/[0-9]+/[0-9]+/.*",
                 xpath:"//ol[contains(concat(' ', @class, ' '), ' commentlist ')]/li"}],
+      antipope:[{scenario:'mtScenario3',
+                 hrefpat:"^[^/]*//(?:[^/]*/)*blog-static/[0-9].*"}],
     };
 
     // sbNation.com is really a family of related blogs
