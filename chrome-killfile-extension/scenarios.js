@@ -871,6 +871,16 @@
     };
   };
 
+  killfileScenario['bloxPlKateMacScenario'] = function() {
+    return {
+      commenttopxpath: "//div[@id='SkomentujListaKomentarzy']//div[starts-with(@id,'comment-')]",
+      sigbit: "div[contains(concat(' ', @class, ' '), ' InfoKomentarzAuthor ')]/descendant::a[1]",
+      replaceXpath: '.',
+      get mangleAppend() {return this.sigbit + '/parent::*';},
+      __proto__: killfileScenario.basicScenario()
+    };
+  };
+
   function initScenario(scenario) {
     killfileScenario[scenario]().manglePage();
     reviewContent();

@@ -178,6 +178,9 @@
                 xpath:"//ol[contains(concat(' ', @class, ' '), ' commentlist ')]/li"}],
       antipope:[{scenario:'mtScenario3',
                  hrefpat:"^[^/]*//(?:[^/]*/)*blog-static/[0-9].*"}],
+      'blox':[{scenario:'bloxPlKateMacScenario',
+                xpath:"//div[@id='SkomentujListaKomentarzy']//div[starts-with(@id,'comment-')]//"
+                + "div[contains(concat(' ', @class, ' '), ' InfoKomentarzAuthor ')]//a"}]
     };
 
     // sbNation.com is really a family of related blogs
