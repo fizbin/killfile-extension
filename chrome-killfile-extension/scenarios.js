@@ -143,7 +143,7 @@
     }
   }
 
-  var kf_debug = true;
+  var kf_debug = false;
 
   function progresslog(logstr) {
     if (kf_debug) {console.log(logstr);}
