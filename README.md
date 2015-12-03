@@ -1,10 +1,10 @@
 killfile-extension
 ==================
 
-This is a Chrome extension designed to provide functionality like the
-usenet killfile to the comments sections of certain blogs. With it,
-readers can decide that they would rather never see comments from certain
-individuals, and hide those comments from view.
+This is a browser extension (for Chrome & Firefox) designed to provide
+functionality like the usenet killfile to the comments sections of
+certain blogs. With it, readers can decide that they would rather never
+see comments from certain individuals, and hide those comments from view.
 
 It is not intended as a replacement for comment moderation, but merely
 as a personal measure an individual reader can take for their own peace
@@ -18,11 +18,11 @@ on all supported blogs.
 Installation
 ------------
 
-Until I put this up on the chrome store, installation will either have to
-be through cloning the git project and then loading an unpacked extension
-from the `chrome-killfile-extension` subdirectory, or downloading the
-`killfile-extension.crx` file from this project's releases and then
-installing the extension locally.
+This extension can now be installed from the
+[Chrome store](https://chrome.google.com/webstore/detail/blog-comment-killfile/kpoilnkelonbaapoapibddjaojohnpjf)
+or [addons.mozilla.org](https://addons.mozilla.org/en-US/firefox/addon/blog-killfile/)
+
+Alternatively, clone the source and run `build.sh`.
 
 Usage
 -----
