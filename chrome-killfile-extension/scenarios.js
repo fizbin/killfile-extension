@@ -143,7 +143,7 @@
     }
   }
 
-  var kf_debug = true;
+  var kf_debug = false;
 
   function progresslog(logstr) {
     if (kf_debug) {console.log(logstr);}
@@ -172,8 +172,8 @@
       inHrefBit: '',
       get sigpat() {
         var s = ('^ *' + this.precedingBit +
-                 ' *(?:<a [^>]*?(?:\\b(?:' + this.aHrefAttribute +
-                 ') *="([^>"]*)")?[^>]*>)?' + this.inHrefBit +
+                 ' *(?:<a (?:[^>]*\\b(?:' + this.aHrefAttribute +
+                 ') *="([^>"]*)"[^>]*|[^>]*)>)?' + this.inHrefBit +
                  '(\\S[^<]*[^ <]|[^ <]) *(?:</a>)? *' +
                  this.followingBit + '.*');
         return new RegExp(s, '');
@@ -428,14 +428,14 @@
   killfileScenario['popehatScenario'] = function() {
     return Object.create(killfileScenario.basicScenario(), {
       mangleAppend: { value:
-          "div[contains(concat(' ', @class, ' '), ' commentmetadata ')]"
+          ".//header/p[1]"
       },
       sigbit: { value:
-            "div[contains(concat(' ', @class, ' '), ' comment-author ')]//"
-            + "cite[contains(concat(' ', @class, ' '), ' fn ')]" },
+            ".//p[contains(concat(' ', @class, ' '), ' comment-author ')]//"
+            + "span[@itemprop='name']" },
       commenttopxpath: { value:
-            "//ol[contains(concat(' ', @class, ' '), ' commentlist ')]"
-            + "//li[contains(concat(' ', @class, ' '), ' comment ')]/div" }
+            "//ol[contains(concat(' ', @class, ' '), ' comment-list ')]"
+            + "//li[contains(concat(' ', @class, ' '), ' comment ')]/article" }
     });
   };
 

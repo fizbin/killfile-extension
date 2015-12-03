@@ -175,7 +175,7 @@
                       xpath:'//a[@name="lastPost"]'}],
       popehat:[{scenario:'popehatScenario',
                 hrefpat:"^[^/]*//[^/]*/[0-9]+/[0-9]+/[0-9]+/.*",
-                xpath:"//ol[contains(concat(' ', @class, ' '), ' commentlist ')]/li"}],
+                xpath:"//ol[contains(concat(' ', @class, ' '), ' comment-list ')]/li"}],
       antipope:[{scenario:'mtScenario3',
                  hrefpat:"^[^/]*//(?:[^/]*/)*blog-static/[0-9].*"}],
     };

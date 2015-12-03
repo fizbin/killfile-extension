@@ -1,6 +1,5 @@
 (typeof define === "function") && define("ffscenario", ["./scenarios"], function(scenarios) {
   if (self.options && self.options.scenario) {
-    console.log("Okay... " + self.options.scenario);
     scenarios.initScenario(self.options.scenario);
   } else {
     console.log("No scenario given!");

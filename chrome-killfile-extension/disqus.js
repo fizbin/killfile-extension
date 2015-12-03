@@ -46,7 +46,7 @@
       scen = Object.create(scenarios.killfileScenario.basicScenario(), {
         commenttopxpath: { value: '//div[@data-role="post-content"]'},
         commentmidxpath: { value: './/div[@data-role="post-content"]'},
-        aHrefAttribute: { value: 'data-user'},
+        aHrefAttribute: { value: 'data-username'},
         sigbit: { value: './/header//*[contains(concat(" ", @class, " "), " author ")]'},
         mangleAppend: { value: './/header'
           + '//*[contains(concat(" ", @class, " "), " post-meta ")]'},

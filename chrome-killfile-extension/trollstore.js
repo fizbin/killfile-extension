@@ -97,7 +97,6 @@
                 chrome.storage.sync.set(
                   setKeys,
                   function () {
-                    console.log('Saved!');
                     var lastError = chrome.runtime.lastError;
                     if (lastError) {
                       console.error("Err storing trolls: "
