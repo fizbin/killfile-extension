@@ -30,10 +30,10 @@ Usage
 Once the extension is installed, if you visit the comment page on a
 blog where it works you'll see a logo in the browser bar telling you
 that killfile is active and a hovering your mouse over a comment will
-cause two links, `[kill]` and `[hide comment]` to appear near the name
-of the commenter. Clicking `[kill]` will hide that person's comments
-from until you click the `[unkill]` next to their name. (As with the
-`[kill]` link, the `[unkill]` link is hidden until you hover over the
+cause two links, `[hush]` and `[hide comment]` to appear near the name
+of the commenter. Clicking `[hush]` will hide that person's comments
+from until you click the `[unhush]` next to their name. (As with the
+`[hush]` link, the `[unhush]` link is hidden until you hover over the
 notification that the comment is hidden)
 
 Feedback
@@ -41,6 +41,6 @@ Feedback
 
 Please report blogs where this should work but doesn't through the
 normal github issue system.  (That is, blogs where the killfile logo
-shows up, but the comments don't have `[kill]` links when you hover over
+shows up, but the comments don't have `[hush]` links when you hover over
 them). Report blogs that this extension doesn't yet support, but should,
 through email to <martin@snowplow.org>
