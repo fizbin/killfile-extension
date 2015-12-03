@@ -2,4 +2,5 @@
 chrome-killfile-extension.crx
 chrome-killfile-extension.pem
 killfile.xpi
+dtm-killlfile@martin.snowplow.org*.xpi
 chrome-killfile-extension.zip
