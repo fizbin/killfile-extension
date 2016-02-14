@@ -60,11 +60,11 @@
         postTrollsCb = null;
         sendMessage({type: 'bulkTrollCheck', trolls: oldTrolls},
                     function(response) {
-                      console.log('Got bulk trollcheck response');
+                      progresslog('Got bulk trollcheck response');
                       oldTrolls.forEach(function(troll) {
                         oldCbs[troll]({troll: troll, isTroll: response[troll]});
                       });
-                      console.log('Finished bulkcheck processing');
+                      progresslog('Finished bulkcheck processing');
                       oldPost && oldPost();
                     });
       }, 0);
@@ -389,6 +389,7 @@
         return contentdiv;
       },
       checkComment: chkComment,
+      postLoad: reviewContent,
       manglePage:
       function() {
         var me = this;
@@ -813,7 +814,12 @@
     return Object.create(killfileScenario.basicScenario(), {
       commenttopxpath: { value: "//div[@class='comments-content']/div" },
       sigbit: { value: ".//span[contains(concat(' ',@class,' '),' author ')]" },
-      mangleAppend: { value: ".//span[@class='byline']" }
+      mangleAppend: { value: ".//span[@class='byline']" },
+      postLoad: { value: function() {
+        // current chrome won't activate :hover CSS without a kick to the layout engine
+        this.foreachComment(function(c) {hideComment(c)});
+        reviewContent();
+      } }
     });
   };
 
@@ -883,7 +889,7 @@
 
   function initScenario(scenario) {
     killfileScenario[scenario]().manglePage();
-    reviewContent();
+    killfileScenario[scenario]().postLoad();
   }
 
   return {

@@ -12,7 +12,6 @@ var define;
     if (name in defined) {
       return defined[name];
     }
-    console.log("Maybe define " + name + "?");
     var args = [];
     for(var i = 0; i < deps.length; i++) {
       var resolvedDep = deps[i];
@@ -29,7 +28,6 @@ var define;
       if (resolvedDep in defined) {
         args.push(defined[resolvedDep]);
       } else {
-        console.log("Deferring def of " + name + " to wait for " + resolvedDep);
         var oldcb = (function () {});
         if (resolvedDep in callbacks) {
           oldcb = callbacks[resolvedDep];
