@@ -12,11 +12,6 @@ const trollStore = tslib.trollStore;
 
 const pageMod = require("sdk/page-mod");
 
-const disqusDeps = [
-  self.data.url("clientload.js"),
-  self.data.url("define.js")
-].concat(ffload.computeDeps(self.data.url("disqus.js")));
-
 const scenarioDeps = [
   self.data.url("clientload.js"),
   self.data.url("define.js")
@@ -87,7 +82,7 @@ pageMod.PageMod({
 pageMod.PageMod({
   include: /https?:\/\/([^\/]+\.)?disqus.com\/embed.*/,
   attachTo: ["frame"],
-  contentScriptFile: disqusDeps
+  contentScriptFile: scenarioDeps
 }).on("attach", function(worker) {
   newWorker(worker);
 });

@@ -41,6 +41,18 @@
         {scenario:'wordpressScenario3',
          xpath:"//ol[contains(concat(' ', @class, ' '), ' commentlist ')]/"
          + "li[count(div)=1]/div/div/cite[@class='fn']"},
+        {scenario:'wordpressScenario4',
+         xpath:"//div[@id='comments']/"
+         + "ol[contains(concat(' ', @class, ' '), ' commentlist ')]"
+         + "/li[contains(concat(' ', @class, ' '), ' comment ')]"
+         + "//div[contains(concat(' ', @class, ' '), ' comment-author ')]"
+         + "//*[contains(concat(' ', @class, ' '), ' fn ')]"},
+        {scenario:'wordpressScenario5',
+         xpath:"//div[@id='comments']/"
+         + "ol[contains(concat(' ', @class, ' '), ' comment-list ')]"
+         + "/li[contains(concat(' ', @class, ' '), ' comment ')]"
+         + "//div[contains(concat(' ', @class, ' '), ' comment-author ')]"
+         + "//*[contains(concat(' ', @class, ' '), ' fn ')]"},
       ],
       blogger:[
         {scenario:'blogspotDLScenario',
@@ -153,6 +165,8 @@
          xpath:"//a[@name='commenttop']/following-sibling::form//table[1]",
         }  
       ],
+      disqus:[{scenario:'disqus', hrefpat:"^[^/]*//[^/]*/embed",}],
+      dailymail:[{scenario:'dailymailScenario', hrefpat:"^[^/]*//[^/]*/news/article"}],
       tnr:[{scenario:'tnrScenario',hrefpat:"^[^/]*//[^/]*/doc_posts",}],
       smalldeadanimals:[{scenario:'mtScenario1',
                          hrefpat:"^[^/]*//[^/]*/\\w*/[0-9]",}],
@@ -174,7 +188,13 @@
                  hrefpat:"^[^/]*//(?:[^/]*/)*blog-static/[0-9].*"}],
       'blox':[{scenario:'bloxPlKateMacScenario',
                 xpath:"//div[@id='SkomentujListaKomentarzy']//div[starts-with(@id,'comment-')]//"
-                + "div[contains(concat(' ', @class, ' '), ' InfoKomentarzAuthor ')]//a"}]
+               + "div[contains(concat(' ', @class, ' '), ' InfoKomentarzAuthor ')]//a"}],
+      file770:[{scenario:'wordpressScenario4',
+                hrefpat:'^[^/]*//[^/]*/..*',
+                xpath:"//div[@id='comments']/ol[contains(concat(' ', @class, ' '), ' commentlist ')]"}],
+      scalzi:[{scenario:'wordpressScenario5',
+                hrefpat:'^[^/]*//whatever[^/]*/..*',
+                xpath:"//div[@id='comments']/ol[contains(concat(' ', @class, ' '), ' comment-list ')]"}],
     };
 
     // sbNation.com is really a family of related blogs
@@ -217,7 +237,7 @@
     if (hostrematch) {
       var host = hostrematch[2];
       var domain = host.replace(
-          /^(?:.*[.])?((?!www\.)[a-zA-Z0-9-]+)(?:\.\w{3}|(?:\.\w{2})+)$/, '$1');
+          /^(?:.*?[.])?((?!www\.)[a-zA-Z0-9-]+)(?:\.\w{3}|(?:\.\w{2})+)$/, '$1');
       var matchl = scenariolist[domain];
       var re;
       if (matchl) {
