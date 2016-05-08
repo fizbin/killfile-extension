@@ -15,6 +15,8 @@
                     + " back to tab at " + request.url);
         sendResponse(retval);
         return true;
+      } else {
+        console.log("No scenarios for " + request.url);
       }
       return false;
     }
