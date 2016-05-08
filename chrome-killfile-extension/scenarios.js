@@ -4,17 +4,17 @@
 // distributed under the file LICENSE found in this
 // directory.
 
-(typeof define === 'function') && define('scenarios', ['./clientUtil'], function(culib) {
+if (typeof define === 'function') {define('scenarios', ['./clientUtil'], function(culib) {
   var sendMessage = culib.sendMessage;
   function showComment(spot, k) {
     spot.classList.remove('dtm_killfile_commentholder_hidecomment');
     spot.classList.add('dtm_killfile_commentholder_showcomment');
-    k && k();
+    if (k) {k();}
   }
   function hideComment(spot, k) {
     spot.classList.remove('dtm_killfile_commentholder_showcomment');
     spot.classList.add('dtm_killfile_commentholder_hidecomment');
-    k && k();
+    if (k) {k();}
   }
 
   function deHTML(s) { // interpret &lt; as <, &amp; as &, etc.
@@ -29,8 +29,21 @@
   }
 
   function mkDomNode(name, attrs) {
-    var retval = document.createElement(name);
-    for (prop in attrs) {
+    var allowedNodeTypes = {
+      'a': function() {return document.createElement('a');},
+      'p': function() {return document.createElement('p');},
+      'span': function() {return document.createElement('span');},
+      'div': function() {return document.createElement('div');},
+      'br': function() {return document.createElement('br');}
+    };
+    var retval;
+    if (allowedNodeTypes.hasOwnProperty(name)) {
+      retval = allowedNodeTypes[name]();
+    } else {
+      console.error("Asked to make surprising node: " + name);
+      return '';
+    }
+    for (var prop in attrs) {
       if (attrs.hasOwnProperty(prop)) {
         retval.setAttribute(prop, attrs[prop]);
       }
@@ -65,7 +78,7 @@
                         oldCbs[troll]({troll: troll, isTroll: response[troll]});
                       });
                       progresslog('Finished bulkcheck processing');
-                      oldPost && oldPost();
+                      if (oldPost) {oldPost();}
                     });
       }, 0);
     }
@@ -156,7 +169,7 @@
 
   // the basic scenario is essentially wordpress-like, so the
   // wordpress scenarios below are pretty short
-  killfileScenario['basicScenario'] = function() {
+  killfileScenario.basicScenario = function() {
     return {
       commenttopxpath: "//ol[contains(concat(' ',@class,' '),' commentlist ')]/li",
       sigbit: './/cite[1]',
@@ -207,7 +220,7 @@
         var sigsnap = document.evaluate(this.sigbit, commentNode, null,
                                         XPathResult.ANY_UNORDERED_NODE_TYPE, null);
         var nd = sigsnap.singleNodeValue;
-        if (nd == null) {progresslog('xpath ' + this.sigbit + ' gave null: ' + commentNode);return null;}
+        if (nd === null) {progresslog('xpath ' + this.sigbit + ' gave null: ' + commentNode);return null;}
         var sigHTML = nd.innerHTML;
         if (!sigHTML) {sigHTML = nd.textContent;}
         else {sigHTML = sigHTML.replace(/\&nbsp;/g, ' ');}
@@ -222,8 +235,10 @@
         }
         var user = sigHTML.replace(sigre, this.sigUserMatch);
         var href = sigHTML.replace(sigre, this.sigHrefMatch);
-        progresslog('user: html {' + JSON.stringify(sigHTML) + '} and regexp {' + sigre + '} gave ' + escape(user) + '!' + escape(href));
-        return [user, escape(user) + '!' + escape(href)];
+        progresslog('user: html {' + JSON.stringify(sigHTML) +
+                    '} and regexp {' + sigre + '} gave ' +
+                    encodeURIComponent(user) + '!' + encodeURIComponent(href));
+        return [user, encodeURIComponent(user) + '!' + encodeURIComponent(href)];
       },
       divHTMLuser:
       function(user, userspec) {
@@ -296,27 +311,28 @@
       },
       insertCommentHolder:
       function(commentNode, holderDiv) {
+        var j, node, indx;
         if (! (commentNode && holderDiv)) {return null;}
         var snap2 = document.evaluate(
           this.replaceXpath, commentNode, null,
           XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
         if (snap2.snapshotLength == 0) {return null;}
         var commentContents = [];
-        for (var j = 0; j < snap2.snapshotLength; j++) {
-          var node = snap2.snapshotItem(j);
+        for (j = 0; j < snap2.snapshotLength; j++) {
+          node = snap2.snapshotItem(j);
           commentContents.push(node);
         }
         var nodesToCheck;
         var canUseExistingNodes = true;
-        if ((commentContents.length == 1)
-            && (commentContents[0] === commentNode)) {
+        if ((commentContents.length == 1) &&
+            (commentContents[0] === commentNode)) {
           nodesToCheck = commentNode.childNodes;
         } else {
           nodesToCheck = commentContents.slice(0);
           var childs = commentNode.childNodes;
-          for (var j = 0; j < childs.length; j++) {
-            var node = childs[j];
-            var indx = nodesToCheck.indexOf(node);
+          for (j = 0; j < childs.length; j++) {
+            node = childs[j];
+            indx = nodesToCheck.indexOf(node);
             if (indx >= 0) {
               nodesToCheck.splice(indx, 1);
             } else {
@@ -329,8 +345,8 @@
             }
           }
         }
-        for (var j = 0; j < nodesToCheck.length; j++) {
-          var node = nodesToCheck[j];
+        for (j = 0; j < nodesToCheck.length; j++) {
+          node = nodesToCheck[j];
           if (canUseExistingNodes) {
             if (node.nodeType == 3) {
               if (/\S/.test(node.nodeValue)) {
@@ -355,7 +371,7 @@
           commentNode.classList.add('dtm_killfile_commentholder');
           commentNode.classList.add('dtm_killfile_commentholder_showcomment');
           for (j = 0; j < commentNode.childNodes.length; j++) {
-            var node = commentNode.childNodes[j];
+            node = commentNode.childNodes[j];
             if ('classList' in node) {
               node.classList.add('dtm_killfile_shown');
             }
@@ -393,63 +409,63 @@
       manglePage:
       function() {
         var me = this;
-        this.foreachComment(function(c) {me.handleComment(c)});
+        this.foreachComment(function(c) {me.handleComment(c);});
       }
     };
   };
 
-  killfileScenario['wordpressScenario'] = function() {
+  killfileScenario.wordpressScenario = function() {
     return Object.create(killfileScenario.basicScenario(), {
       mangleBefore: {
-        get: function() {return this.sigbit + '/following::*'}
+        get: function() {return this.sigbit + '/following::*';}
       }
     });
   };
 
   // Thanks to Christina Schelin, http://christina267.wordpress.com
-  killfileScenario['wordpressScenario2'] = function() {
+  killfileScenario.wordpressScenario2 = function() {
     return Object.create(killfileScenario.wordpressScenario(), {
       commenttopxpath: { value: "//ol[@id='commentlist']/li" },
       sigbit: { value: "span[@class='commentauthor']" }
     });
   };
 
-  killfileScenario['wordpressScenario3'] = function() {
+  killfileScenario.wordpressScenario3 = function() {
     return Object.create(killfileScenario.basicScenario(), {
-      mangleAppend: { get: function() {return this.sigbit + '/parent::*'} },
+      mangleAppend: { get: function() {return this.sigbit + '/parent::*';} },
       commenttopxpath: { value:
-            "//ol[contains(concat(' ', @class, ' '), ' commentlist ')]"
-            + "//li[contains(concat(' ', @class, ' '), ' comment ')]/div" },
+            "//ol[contains(concat(' ', @class, ' '), ' commentlist ')]" +
+            "//li[contains(concat(' ', @class, ' '), ' comment ')]/div" },
       sigbit: { value:
-            "div[contains(concat(' ', @class, ' '), ' comment-author ')]//"
-            + "cite[contains(concat(' ', @class, ' '), ' fn ')]" }
+            "div[contains(concat(' ', @class, ' '), ' comment-author ')]//" +
+            "cite[contains(concat(' ', @class, ' '), ' fn ')]" }
     });
   };
 
-  killfileScenario['popehatScenario'] = function() {
+  killfileScenario.popehatScenario = function() {
     return Object.create(killfileScenario.basicScenario(), {
       mangleAppend: { value:
           ".//header/p[1]"
       },
       sigbit: { value:
-            ".//p[contains(concat(' ', @class, ' '), ' comment-author ')]//"
-            + "span[@itemprop='name']" },
+            ".//p[contains(concat(' ', @class, ' '), ' comment-author ')]//" +
+            "span[@itemprop='name']" },
       commenttopxpath: { value:
-            "//ol[contains(concat(' ', @class, ' '), ' comment-list ')]"
-            + "//li[contains(concat(' ', @class, ' '), ' comment ')]/article" }
+            "//ol[contains(concat(' ', @class, ' '), ' comment-list ')]" +
+            "//li[contains(concat(' ', @class, ' '), ' comment ')]/article" }
     });
   };
 
-  killfileScenario['riotactScenario'] = function() {
+  killfileScenario.riotactScenario = function() {
     return Object.create(killfileScenario.basicScenario(), {
-      mangleAppend: {get: function() {return this.sigbit + '/..'}},
+      mangleAppend: {get: function() {return this.sigbit + '/..';}},
       precedingBit: {value: 'Comment by '},
       followingBit: {value: ' [-\u2014] '},
       commenttopxpath: {value: "//ol[@id='commentlist']/li"}
     });
   };
 
-  killfileScenario['pandagonNewScenario'] = function() {
+  killfileScenario.pandagonNewScenario = function() {
     return Object.create(killfileScenario.basicScenario(), {
       commenttopxpath: {value: "//div[@id='content']/div[starts-with(@class,'comment-body')]"},
       sigbit: {value: "div[@class='comment-posted']"},
@@ -459,7 +475,7 @@
     });
   };
 
-  killfileScenario['feministingNewScenario'] = function() {
+  killfileScenario.feministingNewScenario = function() {
     return Object.create(killfileScenario.basicScenario(), {
       commenttopxpath: {value: "//div[@id='comments']//" +
         "li[contains(concat(' ', @class, ' '), ' comment ')]"},
@@ -468,119 +484,110 @@
       replaceXpath: {value: './div'},
       precedingBit: {value: ''},
       followingBit: {value: ''},
-      mangleAppend: {get: function() {return this.sigbit + '/..'}}
+      mangleAppend: {get: function() {return this.sigbit + '/..';}}
     });
   };
 
-  killfileScenario['feministingNewFrontPageScenario'] = function() {
-    return {
-      commenttopxpath: "//div[@class='mainPadding']/div[@class='entryBody']",
-      replaceXpath: ".|preceding-sibling::div[1][@class='entryTitle']",
-      sigbit: "div[@class='posted']",
-      precedingBit: 'Posted by ',
-      followingBit: ' at <a[^<>]*>[^<>]*</a> \\| in.*',
-      mangleAppend: "div[@class='posted']",
-      __proto__: killfileScenario.basicScenario()
-    };
+  killfileScenario.feministingNewFrontPageScenario = function() {
+    return Object.create(killfileScenario.basicScenario(), {
+      commenttopxpath: {value: "//div[@class='mainPadding']/div[@class='entryBody']"},
+      replaceXpath: {value: ".|preceding-sibling::div[1][@class='entryTitle']"},
+      sigbit: {value: "div[@class='posted']"},
+      precedingBit: {value: 'Posted by '},
+      followingBit: {value: ' at <a[^<>]*>[^<>]*</a> \\| in.*'},
+      mangleAppend: {value: "div[@class='posted']"}
+    });
   };
 
   // thanks to Christina Schelin, http://christina267.wordpress.com/
-  killfileScenario['voiceScenario'] = function() {
-    return {
-      commenttopxpath: "//div[@id='commentsList']/div",
-      sigbit: "div[@class='comments_info']/b",
-      __proto__: killfileScenario.wordpressScenario()
-    };
+  killfileScenario.voiceScenario = function() {
+    return Object.create(killfileScenario.wordpressScenario(), {
+      commenttopxpath: {value: "//div[@id='commentsList']/div"},
+      sigbit: {value: "div[@class='comments_info']/b"}
+    });
   };
 
-  killfileScenario['livejournalScenario'] = function() {
-    return {
-      inHrefBit: '(?:<b>)?',
-      commenttopxpath: "//table[starts-with(@id,'ljcmt') and .//span[contains(concat(' ',@class,' '),' ljuser ')]]",
-      sigbit: "descendant::span[contains(concat(' ',@class,' '),' ljuser ')][1]",
-      replaceXpath: '.',
-      get mangleBefore() {return this.sigbit + '/following::*[1]';},
-      tabXpath: 'descendant::img[1]',
-      precedingBit: '(?:.*?</a>)?',
-      __proto__: killfileScenario.basicScenario()
-    };
+  killfileScenario.livejournalScenario = function() {
+    return Object.create(killfileScenario.basicScenario(), {
+      inHrefBit: {value: '(?:<b>)?'},
+      commenttopxpath: {value: "//table[starts-with(@id,'ljcmt') and .//span[contains(concat(" +
+                               "' ',@class,' '),' ljuser ')]]"},
+      sigbit: {value: "descendant::span[contains(concat(' ',@class,' '),' ljuser ')][1]"},
+      replaceXpath: {value: '.'},
+      mangleBefore: {get: function() {return this.sigbit + '/following::*[1]';}},
+      tabXpath: {value: 'descendant::img[1]'},
+      precedingBit: {value: '(?:.*?</a>)?'}
+    });
   };
 
-  killfileScenario['livejournalScenario_1a'] = function() {
-    return {
-      commenttopxpath: "//span[starts-with(@id,'ljcmt') and ./table[position() = 1 and @class='talk-comment']]",
-      __proto__: killfileScenario.livejournalScenario()
-    };
+  killfileScenario.livejournalScenario_1a = function() {
+    return Object.create(killfileScenario.livejournalScenario(), {
+      commenttopxpath: {value: "//span[starts-with(@id,'ljcmt') and ." +
+                               "/table[position() = 1 and @class='talk-comment']]"},
+    });
   };
 
-  killfileScenario['livejournalScenario2'] = function() {
-    return {
-      commenttopxpath: "//div[@class='comment_wrapper']",
-      sigbit: ".//div[@class='comment_postedby']/*[1]",
-      tabXpath: '',
-      __proto__: killfileScenario.livejournalScenario()
-    };
+  killfileScenario.livejournalScenario2 = function() {
+    return Object.create(killfileScenario.livejournalScenario(), {
+      commenttopxpath: {value: "//div[@class='comment_wrapper']"},
+      sigbit: {value: ".//div[@class='comment_postedby']/*[1]"},
+      tabXpath: {value: ''}
+    });
   };
 
-  killfileScenario['livejournalScenario3'] = function() {
-    return {
-      commenttopxpath: "//div[starts-with(@id,'ljcmt') and child::div[@class='entry']]",
-      replaceXpath: "./h3|./div[@class='entry']|./div[@class='talklinks']",
-      tabXpath: '',
-      __proto__: killfileScenario.livejournalScenario()
-    };
+  killfileScenario.livejournalScenario3 = function() {
+    return Object.create(killfileScenario.livejournalScenario(), {
+      commenttopxpath: {value: "//div[starts-with(@id,'ljcmt') and child::div[@class='entry']]"},
+      replaceXpath: {value: "./h3|./div[@class='entry']|./div[@class='talklinks']"},
+      tabXpath: {value: ''}
+    });
   };
 
-  killfileScenario['livejournalScenario4'] = function() {
-    return {
-      commenttopxpath: "//div[starts-with(@id,'ljcmt')]",
-      replaceXpath: 'child::node()',
-      tabXpath: '',
-      get mangleAppend() {return this.sigbit + '/parent::node()';},
-      mangleBefore: null,
-      __proto__: killfileScenario.livejournalScenario()
-    };
+  killfileScenario.livejournalScenario4 = function() {
+    return Object.create(killfileScenario.livejournalScenario(), {
+      commenttopxpath: {value: "//div[starts-with(@id,'ljcmt')]"},
+      replaceXpath: {value: 'child::node()'},
+      tabXpath: {value: ''},
+      mangleAppend: {get: function() {return this.sigbit + '/parent::node()';}},
+      mangleBefore: {value: null}
+    });
   };
 
-  killfileScenario['livejournalScenario5'] = function() {
-    return {
-      commenttopxpath: "//td[@id='content']//table[@class='heading_bar']/following-sibling::div",
-      __proto__: killfileScenario.livejournalScenario4()
-    };
+  killfileScenario.livejournalScenario5 = function() {
+    return Object.create(killfileScenario.livejournalScenario4(), {
+      commenttopxpath: {value: "//td[@id='content']//table[@class='heading_bar']/following-sibling::div"}
+    });
   };
 
-  killfileScenario['livejournalScenario6'] = function() {
-    return {
-      commenttopxpath: "//table[@class='entrybox'][2]/tbody/tr/td/table/tbody/tr/td/div",
-      __proto__: killfileScenario.livejournalScenario5()
-    };
+  killfileScenario.livejournalScenario6 = function() {
+    return Object.create(killfileScenario.livejournalScenario4(), {
+      commenttopxpath: {value: "//table[@class='entrybox'][2]/tbody/tr/td/table/tbody/tr/td/div"}
+    });
   };
 
-  killfileScenario['livejournalScenario7'] = function() {
-    return {
-      inHrefBit: '(?:<b>)?',
-      commenttopxpath: "//div[@id='comments']//div[contains(concat(' ', @class, ' '), ' b-leaf ')]",
-      sigbit: "descendant::*[contains(concat(' ',@class,' '),' b-leaf-username ')][1]",
-      replaceXpath: './div[1]',
-      get mangleAppend() {return this.sigbit + '/parent::node()';},
-      precedingBit: '<span class="b-leaf-username-name">(?:<span[^>]*lj:user[^>]*>.*?</a>)?',
-      __proto__: killfileScenario.basicScenario()
-    };
+  killfileScenario.livejournalScenario7 = function() {
+    return Object.create(killfileScenario.basicScenario(), {
+      inHrefBit: {value: '(?:<b>)?'},
+      commenttopxpath: {value: "//div[@id='comments']//div[contains(concat(' ', @class, ' '), ' b-leaf ')]"},
+      sigbit: {value: "descendant::*[contains(concat(' ',@class,' '),' b-leaf-username ')][1]"},
+      replaceXpath: {value: './div[1]'},
+      mangleAppend: {get: function() {return this.sigbit + '/parent::node()';}},
+      precedingBit: {value: '<span class="b-leaf-username-name">(?:<span[^>]*lj:user[^>]*>.*?</a>)?'},
+    });
   };
 
-  killfileScenario['livejournalScenario8'] = function() {
-    return {
-      inHrefBit: '(?:<b>)?',
-      commenttopxpath: "//div[@id='comments']//div[contains(concat(' ', @class, ' '), ' comment ')]",
-      sigbit: "descendant::*[contains(concat(' ',@class,' '),' comment-poster ')][1]",
-      replaceXpath: './div[1]',
-      get mangleAppend() {return this.sigbit;},
-      precedingBit: '(?:<span class="[^"]*text[^"]*">[^<>]*</span>)? *(?:<span[^>]*lj:user[^>]*>.*?</a>)?',
-      __proto__: killfileScenario.basicScenario()
-    };
+  killfileScenario.livejournalScenario8 = function() {
+    return Object.create(killfileScenario.basicScenario(), {
+      inHrefBit: {value: '(?:<b>)?'},
+      commenttopxpath: {value: "//div[@id='comments']//div[contains(concat(' ', @class, ' '), ' comment ')]"},
+      sigbit: {value: "descendant::*[contains(concat(' ',@class,' '),' comment-poster ')][1]"},
+      replaceXpath: {value: './div[1]'},
+      mangleAppend: {get: function() {return this.sigbit;}},
+      precedingBit: {value: '(?:<span class="[^"]*text[^"]*">[^<>]*</span>)? *(?:<span[^>]*lj:user[^>]*>.*?</a>)?'},
+    });
   };
 
-  killfileScenario['ljfriendsScenario'] = function() {
+  killfileScenario.ljfriendsScenario = function() {
     // If you want this, see the comments in "scenariolist" below
     return {
       commenttopxpath: '//table[not(ancestor::table) and ' +
@@ -609,7 +616,7 @@
     };
   };
 
-  killfileScenario['pandasThumbScenario'] = function() {
+  killfileScenario.pandasThumbScenario = function() {
     return {
       commenttopxpath: "//div[@id='comment-panels']//div[contains(concat(' ', @class, ' '), ' comment ') and not(boolean(.//p[@id='comment-update-message']))]",
       sigbit: ".//div[contains(concat(' ', @class, ' '), ' comment-header ')]//span[contains(concat(' ', @class, ' '), ' author ')]",
@@ -621,12 +628,12 @@
     };
   };
 
-  killfileScenario['blogspotDLScenario'] = function() {
+  killfileScenario.blogspotDLScenario = function() {
     return {
       commenttopxpath: "//dl[@id='comments-block']/dt",
       sigbit: '.',
-      precedingBit: '(?:<a name=[^>]*> *(?:</a>))? *'
-        + '(?: *<div class="[^"]*image-container[^>]*>.*?</div>)? *',
+      precedingBit: '(?:<a name=[^>]*> *(?:</a>))? *' +
+        '(?: *<div class="[^"]*image-container[^>]*>.*?</div>)? *',
       followingBit: '\\b *said\\W+',
       mangleAppend: '.',
       replaceXpath: '.|following-sibling::dd[1]',
@@ -634,7 +641,7 @@
     };
   };
 
-  killfileScenario['blogspotDivScenario'] = function() {
+  killfileScenario.blogspotDivScenario = function() {
     return {
       commenttopxpath: "//div[@class='blogComments']/div[@class='blogComment']",
       sigbit: "div[@class='byline']",
@@ -645,7 +652,7 @@
     };
   };
 
-  killfileScenario['blogspotTableScenario'] = function() {
+  killfileScenario.blogspotTableScenario = function() {
     return {
       commenttopxpath: "//table[@class='MainTable']//td[@class='MessageCell']/P",
       sigbit: "*[@class='byline']",
@@ -657,7 +664,7 @@
     };
   };
 
-  killfileScenario['scienceblogsScenario'] = function() {
+  killfileScenario.scienceblogsScenario = function() {
     return {
       commenttopxpath: "//div[@id='comments']//div[starts-with(@id,'comment-')]",
       sigbit: "div[@class='header']",
@@ -669,7 +676,7 @@
     };
   };
 
-  killfileScenario['freethoughtblogsScenario'] = function() {
+  killfileScenario.freethoughtblogsScenario = function() {
     return {
       commenttopxpath: "//ol[@class='comment-list']/li[contains(concat(' ',@class,' '),' comment ')]",
       sigbit: ".//header[@class='comment-header']",
@@ -682,7 +689,7 @@
   };
 
 
-  killfileScenario['mtScenario2'] = function() {
+  killfileScenario.mtScenario2 = function() {
     return {
       commenttopxpath: "//div[@class='content']/div[@class='othercomment']",
       sigbit: "p[@class='posted']",
@@ -692,7 +699,7 @@
     };
   };
 
-  killfileScenario['typepadScenario'] = function() {
+  killfileScenario.typepadScenario = function() {
     return {
       commenttopxpath: "//div[@class='comments-content']/div[contains(concat(' ',@class,' '),' comment ')]",
       sigbit: "p[@class='comment-footer']",
@@ -701,7 +708,7 @@
     };
   };
 
-  killfileScenario['haloscanScenario'] = function() {
+  killfileScenario.haloscanScenario = function() {
     return {
       commenttopxpath: "//table[@class='MainTable']//td[@class='MessageCell']",
       sigbit: "descendant::span[@class='byline']",
@@ -715,29 +722,7 @@
     };
   };
 
-  killfileScenario['giveemhellharryScenario1'] = function() {
-    return {
-      commenttopxpath: "//h3[@id='comment']/following-sibling::ol[1]/li",
-      sigbit: 'small[last()]',
-      followingBit: ' \\w+ +\\d+,[^,]*<a',
-      mangleAppend: 'small[last()]',
-      precedingBit: '[^<]*',
-      __proto__: killfileScenario.basicScenario()
-    };
-  };
-
-  killfileScenario['giveemhellharryScenario2'] = function() {
-    return {
-      commenttopxpath: "//div[@class='comments']//div[@class='comment']",
-      sigbit: "div[@class='commentauthor']",
-      replaceXpath: "div[@class='commenttitle' or @class='commenttext' or @class='commentauthor']",
-      mangleAppend: "div[@class='commentauthor']",
-      precedingBit: ' *[Bb][Yy] *',
-      __proto__: killfileScenario.basicScenario()
-    };
-  };
-
-  killfileScenario['soapbloxScenario1'] = function() {
+  killfileScenario.soapbloxScenario1 = function() {
     return {
       commenttopxpath: "//form[@name='rateForm']/a[@name != 'p0' and starts-with(@name,'p')]/following-sibling::div[1][starts-with(@class,'commentLevel')]",
       sigbit: 'div[last()-1]',
@@ -748,7 +733,7 @@
     };
   };
 
-  killfileScenario['truthoutScenario'] = function() {
+  killfileScenario.truthoutScenario = function() {
     return {
       commenttopxpath: "//div[@class='commenthead']",
       replaceXpath: '.|following-sibling::div[1]',
@@ -758,7 +743,7 @@
     };
   };
 
-  killfileScenario['athleticsNationScenario'] = function() {
+  killfileScenario.athleticsNationScenario = function() {
     return {
       delayed: true,
       commenttopxpath: "//div[@class='cx' and .//p[@class='cl']]",
@@ -769,7 +754,7 @@
     };
   };
 
-  killfileScenario['athleticsNationScenario2'] = function() {
+  killfileScenario.athleticsNationScenario2 = function() {
     return {
       commenttopxpath: "//div[starts-with(@id,'comment_item_')]/div[starts-with(@id,'comment_inner_')]",
       sigbit: "./p[@class='byline' or @class='by']/a[1]",
@@ -778,7 +763,7 @@
     };
   };
 
-  killfileScenario['athleticsNationOldScenario'] = function() {
+  killfileScenario.athleticsNationOldScenario = function() {
     return {
       commenttopxpath: "//a[@name='commenttop'][1]/following-sibling::form//table",
       sigbit: './tbody/tr[last()]//a[1]',
@@ -788,7 +773,7 @@
     };
   };
 
-  killfileScenario['tnrScenario'] = function() {
+  killfileScenario.tnrScenario = function() {
     return {
       commenttopxpath: "//div[@class='discuss-header']",
       replaceXpath: '.|following-sibling::div[1]',
@@ -799,7 +784,7 @@
   };
 
   // One of the many Moveable Type templates
-  killfileScenario['mtScenario1'] = function() {
+  killfileScenario.mtScenario1 = function() {
     return {
       commenttopxpath: "//div[@class='comments-body']",
       sigbit: "span[@class='comments-post']",
@@ -810,20 +795,20 @@
     };
   };
 
-  killfileScenario['mtScenario3'] = function() {
+  killfileScenario.mtScenario3 = function() {
     return Object.create(killfileScenario.basicScenario(), {
       commenttopxpath: { value: "//div[@class='comments-content']/div" },
       sigbit: { value: ".//span[contains(concat(' ',@class,' '),' author ')]" },
       mangleAppend: { value: ".//span[@class='byline']" },
       postLoad: { value: function() {
         // current chrome won't activate :hover CSS without a kick to the layout engine
-        this.foreachComment(function(c) {hideComment(c)});
+        this.foreachComment(function(c) {hideComment(c);});
         reviewContent();
       } }
     });
   };
 
-  killfileScenario['freeperScenario'] = function() {
+  killfileScenario.freeperScenario = function() {
     return Object.create(killfileScenario.basicScenario(), {
       commenttopxpath: { value: "//div[@class='b2'][1]/following-sibling::div[@class='n2']" },
       sigbit: { value: "preceding-sibling::*[@class='a2'][1]" },
@@ -834,7 +819,7 @@
     });
   };
 
-  killfileScenario['nytimesBlogsScenario'] = function() {
+  killfileScenario.nytimesBlogsScenario = function() {
     return Object.create(killfileScenario.basicScenario(), {
       commenttopxpath: { value: "//ul[@class='commentlist']/li" },
       sigbit: { value: './/p[last()]/cite' },
@@ -847,7 +832,7 @@
 
   // fetlife.com
   // Added thanks to xtina@twilite.org
-  killfileScenario['fetScenario'] = function() {
+  killfileScenario.fetScenario = function() {
     return {
       commenttopxpath: "//div[contains(@class,'group_comment')]",
       sigbit: "./*[contains(@class,'span-14')]/div[@class='quiet']",
@@ -858,7 +843,7 @@
   };
 
   // disqus non-iframe embedded (e.g. shakesville)
-  killfileScenario['disqusScenario1'] = function() {
+  killfileScenario.disqusScenario1 = function() {
     return {
       manglePage: function() {
         var me = this;
@@ -868,7 +853,7 @@
     };
   };
 
-  killfileScenario['smForum1'] = function() {
+  killfileScenario.smForum1 = function() {
     return {
       commenttopxpath: '//a[@name="lastPost"]/preceding-sibling::table[1]/tbody/tr',
       sigbit: './/tr[td[2]]/td[1]/b',
@@ -877,7 +862,7 @@
     };
   };
 
-  killfileScenario['bloxPlKateMacScenario'] = function() {
+  killfileScenario.bloxPlKateMacScenario = function() {
     return {
       commenttopxpath: "//div[@id='SkomentujListaKomentarzy']//div[starts-with(@id,'comment-')]",
       sigbit: "div[contains(concat(' ', @class, ' '), ' InfoKomentarzAuthor ')]/descendant::a[1]",
@@ -897,7 +882,7 @@
     killfileScenario: killfileScenario,
     enableProgressLog: enableProgressLog
   };
-});
+});}
 
 /// Local Variables: ///
 /// mode: Javascript ///

@@ -136,12 +136,6 @@
         {scenario:'haloscanScenario',
          xpath:"//body/table[@class='MainTable']//td[@class='MessageCell']"}
       ],
-      giveemhellharry:[
-        {scenario:'giveemhellharryScenario1', hrefpat:"^[^/]*//[^/]*/blog/"},
-        {scenario:'giveemhellharryScenario2',
-         hrefpat:"^[^/]*//[^/]*/page/community/",
-         xpath: "//div[@class='comments']"}
-      ],
       truthout:[
         {scenario:'truthoutScenario',
          hrefpat:"^https?://forum.truthout.org/blog/story/",}
