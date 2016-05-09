@@ -82,7 +82,8 @@ pageMod.PageMod({
 pageMod.PageMod({
   include: /https?:\/\/([^\/]+\.)?disqus.com\/embed.*/,
   attachTo: ["frame"],
-  contentScriptFile: scenarioDeps
+  contentScriptFile: scenarioDeps,
+  contentScriptOptions: {scenario: 'disqus'}
 }).on("attach", function(worker) {
   newWorker(worker);
 });
