@@ -134,7 +134,7 @@
       typepad:
       [
         {scenario:'typepadScenario',hrefpat:"^[^/]*//[^/]*/\\w+/[0-9]",
-         xpath:"//div[@class='comments-content'][1]/div[contains(concat(' ',@class,' '),' comment ')][1]/p[@class='comment-footer']"},
+         xpath:"//div[@class='comments-content'][1]/div[contains(concat(' ',@class,' '),' comment ')][1]/p[contains(concat(' ',@class,' '),' comment-footer ')]"},
         // There are some other typepad pages with a VERY BAD comment structure
         // (no surrounding element to grab ahold of, so that you have to
         // divide up the comment stream where-ever you see P's of a certain class)

@@ -157,7 +157,7 @@ if (typeof define === 'function') {define('scenarios', ['./clientUtil'], functio
     }
   }
 
-  var kf_debug = true;
+  var kf_debug = false;
 
   function progresslog(logstr) {
     if (kf_debug) {console.log(logstr);}
@@ -772,18 +772,23 @@ if (typeof define === 'function') {define('scenarios', ['./clientUtil'], functio
     return {
       commenttopxpath: "//div[@class='content']/div[@class='othercomment']",
       sigbit: "p[@class='posted']",
-      followingBit: '(?:<a [^>]*><img [^>]*><\\/a>)? +at +[^\\]]*\\[link\\][^\\]]*$',
+      precedingBit: 'Posted by:',
+      followingBit: '(?:<a [^>]*><img [^>]*><\\/a>)? +at +[^\\]]*\\[link\\]'
+        + '[^\\]]*$',
       mangleAppend: "p[@class='posted']",
-      __proto__: killfileScenario.pharyngulaScenario()
+      __proto__: killfileScenario.basicScenario()
     };
   };
 
   killfileScenario.typepadScenario = function() {
     return {
-      commenttopxpath: "//div[@class='comments-content']/div[contains(concat(' ',@class,' '),' comment ')]",
-      sigbit: "p[@class='comment-footer']",
-      mangleAppend: "p[@class='comment-footer']",
-      __proto__: killfileScenario.pharyngulaScenario()
+      commenttopxpath: "//div[@class='comments-content']"
+        + "/div[contains(concat(' ',@class,' '),' comment ')]",
+      sigbit: "p[contains(concat(' ',@class,' '),' comment-footer ')]",
+      precedingBit: 'Posted by:',
+      followingBit: '(?:(?:<a [^>]*>)?<img [^>]*>(?:</a>)?)? *\\|[^|]*$',
+      mangleAppend: "p[contains(concat(' ',@class,' '),' comment-footer ')]",
+      __proto__: killfileScenario.basicScenario()
     };
   };
 
