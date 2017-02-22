@@ -928,21 +928,10 @@ if (typeof define === 'function') {define('scenarios', ['./clientUtil'], functio
     };
   };
 
-  // disqus non-iframe embedded (e.g. shakesville)
-  killfileScenario.disqusScenario1 = function() {
-    return {
-      manglePage: function() {
-        var me = this;
-        // ___ YOU WERE HERE ___
-      },
-      __proto__: killfileScenario.basicScenario()
-    };
-  };
-
   killfileScenario.disqus = function() {
     return Object.create(killfileScenario.basicScenario(), {
       commenttopxpath: { value: '//div[@data-role="post-content"]'},
-      commentmidxpath: { value: './/div[@data-role="post-content"]'},
+      commentmidxpath: { value: './descendant-or-self::div[@data-role="post-content"]'},
       aHrefAttribute: { value: 'data-username'},
       sigbit: { value: './/header//*[contains(concat(" ", @class, " "), " author ")]'},
       mangleAppend: { value: './/header'
