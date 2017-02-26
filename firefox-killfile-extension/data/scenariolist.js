@@ -1,1 +1,0 @@
-../../chrome-killfile-extension/scenariolist.js

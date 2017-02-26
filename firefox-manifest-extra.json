@@ -1,0 +1,8 @@
+{
+   "applications": {
+     "gecko": {
+       "id": "dtm-killlfile@martin.snowplow.org",
+       "strict_min_version": "42.0"
+     }
+   }
+}
